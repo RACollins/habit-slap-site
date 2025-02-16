@@ -6,6 +6,7 @@ def TopBar():
     return NavBar(
         A("Login", href="/login"),
         brand="Habit Slap",
+        cls="px-36 py-9",
     )
 
 

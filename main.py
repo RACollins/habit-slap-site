@@ -2,6 +2,8 @@ from fasthtml.common import *
 from monsterui.all import *
 from components import TopBar, theme_switcher
 
+### Import pages
+import pages.landing
 
 theme_hdrs = Theme.rose.headers()
 
@@ -10,9 +12,6 @@ app, rt = fast_app(live=True, pico=False, hdrs=theme_hdrs)
 
 
 ### Set up routes
-@rt("/")
-def get():
-    return Title("Habit Slap"), TopBar(), theme_switcher()
-
+pages.landing.ar.to_app(app)
 
 serve()
