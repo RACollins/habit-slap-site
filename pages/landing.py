@@ -11,10 +11,9 @@ def MainSignUp():
         Article(
             ArticleTitle("Habit Slap"),
             Subtitle("Motivation like a slap in the face ✋💥"),
-            A(Button("Get Started", type="button", cls=ButtonT.primary), href="/login"),
+            A(Button("Get Started", type="button", cls="btn btn-primary"), href="/login"),
             P("Scroll down to learn more", cls="text-rose-300"),
             A("↓", href="#how-it-works"),
-            cls="main-signup",
         ),
     )
 

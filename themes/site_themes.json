@@ -1,0 +1,23 @@
+{
+    "default": {
+        "color": "rose",
+        "radii": "md",
+        "shadows": "md",
+        "font": "base",
+        "mode": "dark"
+    },
+    "alt": {
+        "color": "blue",
+        "radii": "md",
+        "shadows": "md",
+        "font": "base",
+        "mode": "light"
+    },
+    "incorrect_test": {
+        "color": "teal",
+        "radii": "md",
+        "shadows": "md",
+        "font": "base",
+        "mode": "light"
+    }
+}
