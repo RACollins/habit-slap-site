@@ -10,3 +10,10 @@ def TopBar():
         brand="Habit Slap",
         cls="px-36 py-9",
     )
+
+def theme_picker():
+    return ThemePicker(
+        custom_themes=[
+            ("Tokyo", "#869de6"),
+        ],
+    )

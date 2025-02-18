@@ -19,5 +19,12 @@
         "shadows": "md",
         "font": "base",
         "mode": "light"
+    },
+    "tokyo": {
+        "color": "tokyo",
+        "radii": "md",
+        "shadows": "md",
+        "font": "base",
+        "mode": "dark"
     }
 }
