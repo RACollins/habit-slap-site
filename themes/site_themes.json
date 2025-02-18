@@ -26,5 +26,12 @@
         "shadows": "md",
         "font": "base",
         "mode": "dark"
+    },
+    "black-ruby": {
+        "color": "black-ruby",
+        "radii": "md",
+        "shadows": "md",
+        "font": "base",
+        "mode": "dark"
     }
 }
