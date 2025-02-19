@@ -16,7 +16,7 @@ def MainSignUp():
                     cls="py-6",
                 ),
                 Button("Get Started", cls="btn btn-primary"),
-                P("Scroll down to learn more", cls="text-secondary py-3"),
+                P("Scroll down to learn more", cls="text-accent py-3"),
                 A("↓", href="#how-it-works"),
             ),
         ),
