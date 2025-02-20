@@ -7,7 +7,7 @@ from monsterui.all import *
 
 # Get frankenui and tailwind headers via CDN using Theme.blue.headers()
 hdrs = Theme.rose.headers(
-    mode="light", radii=ThemeRadii.md, shadows=ThemeShadows.md, font=ThemeFont.default
+    mode="light", radii=ThemeRadii.lg, shadows=ThemeShadows.sm, font=ThemeFont.default
 )
 
 # fast_app is shadowed by MonsterUI to make it default to no Pico, and add body classes

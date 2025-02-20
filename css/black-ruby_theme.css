@@ -52,4 +52,19 @@
     --chart-4: 346 30% 78%;
     --chart-5: 346 65% 48%;
 }
+
+/* For the bounce animation */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(10px);
+    }
+}
+
+.bounce-animation {
+    display: inline-block;
+    animation: bounce 1s infinite;
+}
   
