@@ -50,7 +50,22 @@ def HowItWorksCard(step):
     return Div(cls="card bg-muted shadow-xl flex-1")(
         Div(cls="card-body items-center text-center")(
             H2(step["top"], cls="card-title"),
-            P(step["body"], cls="text-xl text-muted-foreground my-4"),
-            P(step["bottom"]),
+            P(step["body"], cls="text-xl my-4"),
+            P(step["bottom"], cls="text-muted-foreground"),
+        )
+    )
+
+def TestimonialCard(text, author, username):
+    return Div(cls="card bg-muted shadow-xl")(
+        Div(cls="card-body")(
+            # Large quotation mark
+            Div('"', cls="text-4xl text-primary mb-4"),
+            # Testimonial text
+            P(text, cls="text-lg mb-4"),
+            # Author info
+            Div(cls="mt-auto")(
+                H3(author, cls="font-bold"),
+                P(f"@{username}", cls="text-sm text-base-content/60"),
+            )
         )
     )
