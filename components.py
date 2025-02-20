@@ -44,3 +44,13 @@ def theme_picker():
             ("Tokyo", "#869de6"),
         ],
     )
+
+
+def HowItWorksCard(step):
+    return Div(cls="card bg-muted shadow-xl flex-1")(
+        Div(cls="card-body items-center text-center")(
+            H2(step["top"], cls="card-title"),
+            P(step["body"], cls="text-xl text-muted-foreground my-4"),
+            P(step["bottom"]),
+        )
+    )

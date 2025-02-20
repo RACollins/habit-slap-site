@@ -1,7 +1,7 @@
 from fasthtml.common import *
 import fasthtml
 from monsterui.all import *
-from components import DaisyTopBar
+from components import DaisyTopBar, HowItWorksCard
 from lucide_fasthtml import Lucide
 
 
@@ -20,12 +20,46 @@ def MainSignUp():
                 ),
                 Button("Get Started", cls="btn btn-primary py-3"),
                 P("Scroll down to learn more", cls="text-accent py-3"),
-                A("↓", href="#how-it-works", cls="text-2xl bounce-animation"),
+                A("↓", href="#how-it-works", cls="text-2xl bounce-animation scroll-smooth"),
             ),
         ),
     )
 
 
+def HowItWorks():
+    card_content = {
+        "step1": {
+            "top": "Step 1",
+            "body": "🎯 Set a Goal",
+            "bottom": "Sign up with your email and set a goal.",
+        },
+        "step2": {
+            "top": "Step 2",
+            "body": "💪 Get Motivated",
+            "bottom": "Recieve daily emails with motivational messages tailored to you.",
+        },
+        "step3": {
+            "top": "Step 3",
+            "body": "🏅 Get Sh*t Done!",
+            "bottom": "No more excuses! Build that habit! Attack your week! Also works well for quitting bad habits.",
+        },
+    }
+    return Div(cls="container mx-auto py-16")(
+        H2("How it Works", cls="text-4xl font-bold text-center mb-12"),
+        Div(
+            *[HowItWorksCard(card_content[f"step{i+1}"]) for i in range(3)],
+            cls="flex flex-col md:flex-row gap-8 justify-center items-stretch px-4",
+        ),
+        id="how-it-works",
+    )
+
+
 @ar.get("/")
 def get():
-    return Title("Habit Slap"), DaisyTopBar(), MainSignUp()
+    return (
+        Title("Habit Slap"),
+        Style("html { scroll-behavior: smooth; }"),
+        DaisyTopBar(),
+        MainSignUp(),
+        HowItWorks()
+    )
