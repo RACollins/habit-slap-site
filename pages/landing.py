@@ -1,7 +1,13 @@
 from fasthtml.common import *
 import fasthtml
 from monsterui.all import *
-from components import DaisyTopBar, HowItWorksCard, TestimonialCard
+from components import (
+    DaisyTopBar,
+    HowItWorksCard,
+    TestimonialCard,
+    FAQComp,
+    PricingCard,
+)
 from lucide_fasthtml import Lucide
 
 
@@ -18,7 +24,7 @@ def MainSignUp():
                     Lucide("hand", cls="text-primary"),
                     Lucide("sparkles", cls="text-primary"),
                 ),
-                Button("Get Started", cls="btn btn-primary py-3"),
+                Button("Get Started", cls="btn btn-primary text-primary-foregroundpy-3"),
                 P("Scroll down to learn more", cls="text-accent py-3"),
                 A(
                     "↓",
@@ -111,7 +117,7 @@ def Testimonials():
         H2("Testimonials", cls="text-4xl font-bold text-center mb-4"),
         P(
             "What our users are saying about us (may be fake)",
-            cls="text-center text-base-content/60 mb-12",
+            cls="text-center text-muted-foreground mb-12",
         ),
         Div(
             *[
@@ -126,24 +132,46 @@ def Testimonials():
 
 
 def FAQ():
+    faq_content = {
+        "who": {
+            "question": "Who is this for?",
+            "answer": "For those who want to improve, know how to do it, but lack the motivation to do it.",
+        },
+        "cost": {
+            "question": "How much does it cost?",
+            "answer": "It's free! Sign up with your email and set a goal. Cancel anytime.",
+        },
+        "writers": {
+            "question": "Who writes the emails?",
+            "answer": "gpt-4o-mini, but working on a custom model, and even human written emails (coming soon!)",
+        },
+        "frequency": {
+            "question": "How often will I recieve emails?",
+            "answer": "Every day, be less frequently if you'd like.",
+        },
+    }
     return Div(cls="container mx-auto py-16 px-4")(
-        H2("Frequently Asked Questions", cls="text-4xl font-bold text-center mb-8"),
+        H2("FAQ", cls="text-4xl font-bold text-center mb-8"),
         Div(cls="space-y-4")(
-            Div(cls="collapse collapse-arrow bg-primary text-primary-content")(
-                Input(type="checkbox", cls="peer"),
-                Div(
-                    "What is Habit Slap?",
-                    cls="collapse-title peer-checked:bg-secondary peer-checked:text-secondary-content",
-                ),
-                Div(
-                    P(
-                        "Habit Slap is a motivational email service that helps you build good habits and break bad ones."
-                    ),
-                    cls="collapse-content peer-checked:bg-secondary peer-checked:text-secondary-content",
-                ),
-            ),
+            *[
+                FAQComp(qa_dict["question"], qa_dict["answer"])
+                for k, qa_dict in faq_content.items()
+            ],
         ),
     )
+
+
+def Pricing():
+    return Div(cls="container mx-auto py-16 px-4")(
+        H2("Pricing", cls="text-4xl font-bold text-center mb-8"),
+        Div(
+            PricingCard("Free", "$0", ["1 goal", "Daily emails", "No commitment"]),
+            PricingCard("Premium", "$10", ["1 goal", "Daily emails", "No commitment"]),
+            PricingCard("Human", "$100", ["1 goal", "Daily emails", "No commitment"]),
+            cls="flex flex-col md:flex-row gap-8 justify-center items-stretch",
+        ),
+    )
+
 
 @ar.get("/")
 def get():
@@ -158,4 +186,5 @@ def get():
         Div(Div(cls="divider"), cls="mx-16"),
         FAQ(),
         Div(Div(cls="divider"), cls="mx-16"),
+        Pricing(),
     )
