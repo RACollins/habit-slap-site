@@ -15,7 +15,7 @@ ar = fasthtml.APIRouter()
 
 
 def MainSignUp():
-    return Div(cls="hero bg-base-200 min-h-screen")(
+    return Div(cls="hero bg-background min-h-screen")(
         Div(cls="hero-content text-center")(
             Div(cls="max-w-md")(
                 H1("Habit Slap", cls="text-5xl font-bold"),
@@ -24,7 +24,13 @@ def MainSignUp():
                     Lucide("hand", cls="text-primary"),
                     Lucide("sparkles", cls="text-primary"),
                 ),
-                Button("Get Started", cls="btn btn-primary text-primary-foregroundpy-3"),
+                A(
+                    Button(
+                        "Get Started",
+                        cls="btn btn-primary text-primary-foreground py-3",
+                    ),
+                    href="/login",
+                ),
                 P("Scroll down to learn more", cls="text-accent py-3"),
                 A(
                     "↓",

@@ -20,18 +20,32 @@
         "font": "base",
         "mode": "light"
     },
-    "tokyo": {
-        "color": "tokyo",
-        "radii": "md",
+    "tokyo-dark": {
+        "color": "tokyo-dark",
+        "radii": "lg",
         "shadows": "md",
         "font": "base",
         "mode": "dark"
     },
+    "tokyo-light": {
+        "color": "tokyo-light",
+        "radii": "lg",
+        "shadows": "md",
+        "font": "base",
+        "mode": "light"
+    },
     "black-ruby": {
         "color": "black-ruby",
-        "radii": "md",
+        "radii": "lg",
         "shadows": "md",
         "font": "base",
         "mode": "dark"
+    },
+    "sandy-teal": {
+        "color": "sandy-teal",
+        "radii": "lg",
+        "shadows": "md",
+        "font": "base",
+        "mode": "light"
     }
 }

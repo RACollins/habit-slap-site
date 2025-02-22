@@ -1,4 +1,4 @@
-.uk-theme-tokyo {
+.uk-theme-tokyo-dark {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --muted: 210 40% 96.1%;
@@ -26,7 +26,7 @@
     --radius: 0.5rem;
 }
   
-.dark.uk-theme-tokyo {
+.dark.uk-theme-tokyo-dark {
     --background: 240 13.73% 10%;
     --foreground: 229.76 31.78% 74.71%;
     --muted: 232.5 15.44% 18.32%;

@@ -1,5 +1,8 @@
 from fasthtml.common import *
 from monsterui.all import *
+import re
+import os
+from config import selected_theme
 
 
 def TopBar():
@@ -47,7 +50,7 @@ def theme_picker():
 
 
 def HowItWorksCard(step):
-    return Div(cls="card bg-muted shadow-xl flex-1")(
+    return Div(cls="card bg-card shadow-xl flex-1")(
         Div(cls="card-body items-center text-center")(
             H2(step["top"], cls="card-title"),
             P(step["body"], cls="text-xl my-4"),
@@ -57,7 +60,7 @@ def HowItWorksCard(step):
 
 
 def TestimonialCard(text, author, username):
-    return Div(cls="card bg-muted shadow-xl")(
+    return Div(cls="card bg-card shadow-xl")(
         Div(cls="card-body")(
             # Large quotation mark
             Div('"', cls="text-4xl text-primary mb-4"),
@@ -72,30 +75,63 @@ def TestimonialCard(text, author, username):
     )
 
 
-def FAQComp(question, answer):
-    # Had to hard code the colors because the semanitc names were not working
-    # May revisit in the future
-    hc_colours = {
-        "bg-muted": "bg-[hsl(214,12%,15%)]",
-        "text-muted-foreground": "text-[hsl(214,12%,65%)]",
-        "bg-primary": "bg-[hsl(346,62%,48%)]",
-        "text-primary-foreground": "text-[hsl(0,0%,100%)]",
+def extract_theme_colors(css_content):
+    """Extract specific colors from CSS content."""
+    color_vars = {
+        "muted": None,
+        "muted-foreground": None,
+        "primary": None,
+        "primary-foreground": None,
     }
-    return Div(
-        cls=f"collapse collapse-arrow bg-muted text-muted-foreground"
-    )(
+
+    # Find all color definitions
+    for line in css_content.split("\n"):
+        for color_name in color_vars.keys():
+            pattern = f"--{color_name}: (.*?);"
+            match = re.search(pattern, line)
+            if match:
+                # Convert "240 13.73% 10%" to "hsl(240,13.73%,10%)"
+                values = match.group(1).strip()
+                color_vars[color_name] = f"[hsl({values.replace(' ', ',')})]"
+
+    return color_vars
+
+
+def load_theme_colors():
+    """Load colors from all theme files."""
+    theme_colors = {}
+    css_dir = "css"
+
+    for filename in os.listdir(css_dir):
+        if filename.endswith("_theme.css"):
+            theme_name = filename.replace("_theme.css", "")
+            with open(os.path.join(css_dir, filename), "r") as f:
+                css_content = f.read()
+                theme_colors[theme_name] = extract_theme_colors(css_content)
+
+    return theme_colors
+
+
+### Load the colors once when the module is imported
+hc_colours = load_theme_colors()
+
+
+def FAQComp(question, answer):
+    theme_colors = hc_colours[selected_theme]
+    
+    return Div(cls=f"collapse collapse-arrow bg-muted text-muted-foreground")(
         Input(type="checkbox", cls="peer"),
         Div(
             question,
-            cls=f"collapse-title peer-checked:{hc_colours['bg-primary']} peer-checked:{hc_colours['text-primary-foreground']}",
+            cls=f"collapse-title peer-checked:bg-{theme_colors['primary']} peer-checked:text-{theme_colors['primary-foreground']}",
         ),
         Div(
             P(answer),
-            cls=f"collapse-content peer-checked:{hc_colours['bg-primary']} peer-checked:{hc_colours['text-primary-foreground']}",
+            cls=f"collapse-content peer-checked:bg-{theme_colors['primary']} peer-checked:text-{theme_colors['primary-foreground']}",
         ),
     )
 
-
+### Using MonsterUI Card, not DaisyUI Card
 def PricingCard(plan, price, features):
     return Card(
         Div(cls="p-12")(  # Added padding container
@@ -115,7 +151,7 @@ def PricingCard(plan, price, features):
             ),
             Button(
                 "Subscribe Now",
-                cls=("button bg-primary text-primary-foreground", "w-full"),
+                cls=("btn btn-primary text-primary-foreground w-full"),
             ),
         ),
     )

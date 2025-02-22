@@ -11,8 +11,10 @@
        "blue",
        "yellow",
        "violet",
-       "tokyo",
-       "black-ruby"
+       "tokyo-light",
+       "tokyo-dark",
+       "black-ruby",
+       "sandy-teal"
     ],
     "radii":[
        "none",
