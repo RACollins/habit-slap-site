@@ -3,13 +3,26 @@ import fasthtml
 from monsterui.all import *
 from components import DaisyTopBar
 import random
+import os
+import yagmail
+import secrets
+from dotenv import load_dotenv
+from database.dynamo_handler import DynamoHandler
+from datetime import datetime, timedelta, timezone
+
+load_dotenv()
+db = DynamoHandler()
+site_url = os.getenv("SITE_URL")
+
 ar = fasthtml.APIRouter()
 
 
 def MagicLinkForm(btn_text: str, target: str):
+
     with open("placeholder_emails.txt", "r") as file:
         placeholder_emails = file.readlines()
     placeholder_email = random.choice(placeholder_emails).strip()
+
     return Div(cls="hero bg-background min-h-screen")(
         Div(cls="hero-content text-center")(
             Div(cls="max-w-md")(
@@ -21,17 +34,19 @@ def MagicLinkForm(btn_text: str, target: str):
                     Div(cls="relative w-full")(
                         Input(
                             type="email",
+                            name="email",
                             required=True,
                             placeholder=placeholder_email,
-                            cls="input input-bordered w-full join-item validator placeholder-secondary",
+                            cls="input input-bordered w-full join-item validator placeholder-accent",
                         ),
                         Div("Enter valid email address", cls="validator-hint hidden"),
                     ),
-                    Button(btn_text, cls="btn btn-primary join-item"),
+                    Button(btn_text, cls="btn btn-primary join-item", id="submit-btn"),
                     hx_post=target,
                     hx_target="#error",
                     hx_disabled_elt="#submit-btn",
                 ),
+                Div(id="error", cls="mt-4"),
             )
         )
     )
@@ -44,3 +59,100 @@ def get():
         DaisyTopBar(),
         MagicLinkForm("Log in", "/send_magic_link"),
     )
+
+
+def send_magic_link_email(email: str, magic_link: str):
+    # Get credentials from environment variables
+    sender_email = os.getenv("GMAIL_USER")
+    sender_password = os.getenv("GMAIL_PASSWORD")
+
+    if not sender_email or not sender_password:
+        raise Exception("Email credentials not configured")
+
+    email_content = f"""
+    Hi there,
+  
+    Click this link to sign in to Habit Slap: {magic_link}
+  
+    If you didn't request this, just ignore this email.
+  
+    Cheers,
+    The Habit Slap Team
+    """
+
+    # Initialize yagmail SMTP client
+    yag = yagmail.SMTP(sender_email, sender_password)
+
+    try:
+        # Send email
+        yag.send(to=email, subject="Sign in to Habit Slap", contents=email_content)
+        return True
+    except Exception as e:
+        print(f"Failed to send email: {str(e)}")
+        raise e
+    finally:
+        yag.close()
+
+
+@ar.post("/send_magic_link")
+def post(email: str):
+    # Validate email
+    if not email:
+        return Div("Email is required", cls="text-error text-center", id="error")
+
+    try:
+        # Get or create user
+        user = db.get_user(email)
+        if not user:
+            user = {
+                "email": email,
+                "is_active": False,
+                "magic_link_token": None,
+                "magic_link_expiry": None,
+                "tier": "free",  # Add default tier when creating user
+            }
+            db.create_user(user)
+
+        # Generate magic link
+        magic_link_token = secrets.token_urlsafe(32)
+        magic_link_expiry = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+        # Update user with magic link info
+        db.update_user(
+            email,
+            {
+                "magic_link_token": magic_link_token,
+                "magic_link_expiry": magic_link_expiry.isoformat(),
+            },
+        )
+
+        # Send email
+        magic_link = f"{site_url}/verify_magic_link/{magic_link_token}"
+        send_magic_link_email(email, magic_link)
+
+        # Return success response
+        return (
+            Div(
+                P(
+                    "Check your inbox. Link will expire in 15 minutes.",
+                    cls="text-success text-center",
+                ),
+                id="error",
+            ),
+            HttpHeader("HX-Reswap", "innerHTML"),
+            Button(
+                "Magic link sent",
+                type="submit",
+                id="submit-btn",
+                disabled=True,
+                cls="btn btn-primary join-item",
+                hx_swap_oob="true",
+            ),
+        )
+    except Exception as e:
+        # Return error response
+        return Div(
+            f"Failed to send magic link: {str(e)}",
+            cls="text-error text-center",
+            id="error",
+        )

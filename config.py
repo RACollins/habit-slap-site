@@ -1,2 +1,2 @@
 # Default theme
-selected_theme = "sandy-teal"
+selected_theme = "black-ruby"
