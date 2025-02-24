@@ -4,7 +4,7 @@ from utils import set_theme
 from config import selected_theme
 
 ### Import pages
-from pages import landing, login
+from pages import landing, login, signup, dashboard
 
 ### Set up beforeware
 login_redir = RedirectResponse("/login", status_code=303)
@@ -39,11 +39,17 @@ custom_theme_css = Link(
 )
 theme_hdrs = set_theme(theme_hdrs, selected_theme)
 
+### Bounce animation
+bounce_css = Link(
+    rel="stylesheet", href="/css/animations.css", type="text/css"
+)
+
 ### Set up FastHTML app
-app, rt = fast_app(live=True, pico=False, hdrs=(theme_hdrs, custom_theme_css))
+app, rt = fast_app(live=True, pico=False, hdrs=(theme_hdrs, custom_theme_css, bounce_css))
 
 ### Set up routes
 landing.ar.to_app(app)
 login.ar.to_app(app)
-
+signup.ar.to_app(app)
+dashboard.ar.to_app(app)
 serve()

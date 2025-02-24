@@ -1,0 +1,14 @@
+/* Common animations used across themes */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(10px);
+    }
+}
+
+.bounce-animation {
+    display: inline-block;
+    animation: bounce 1s infinite;
+} 

@@ -153,7 +153,7 @@ def FAQ():
         },
         "frequency": {
             "question": "How often will I recieve emails?",
-            "answer": "Every day, be less frequently if you'd like.",
+            "answer": "Every day, but you can change this in your dashboard.",
         },
     }
     return Div(cls="container mx-auto py-16 px-4")(

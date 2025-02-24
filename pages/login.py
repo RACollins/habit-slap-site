@@ -156,3 +156,20 @@ def post(email: str):
             cls="text-error text-center",
             id="error",
         )
+
+
+@ar.get("/verify_magic_link/{token}")
+def get(session, token: str):
+    now = datetime.now(timezone.utc)
+    user = db.query_by_token(token)
+
+    if user and datetime.fromisoformat(user["magic_link_expiry"]) > now:
+        session["auth"] = user["email"]
+        db.update_user(
+            user["email"],
+            {"magic_link_token": None, "magic_link_expiry": None, "is_active": True},
+        )
+        if not user.get("goal") or not user.get("next_email_date"):
+            return RedirectResponse("/signup")
+        return RedirectResponse("/dashboard")
+    return "Invalid or expired magic link"
