@@ -1,6 +1,7 @@
 from fasthtml.common import *
 import fasthtml
-from monsterui.all import *
+
+# from monsterui.all import *
 from database.dynamo_handler import DynamoHandler
 from components import DaisyTopBar
 
@@ -13,57 +14,111 @@ def StepContent(step_num, user):
     match step_num:
         case 1:
             return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
-                Legend("Personal Info", cls="fieldset-legend"),
-                Label("Full Name", cls="fieldset-label"),
-                Input(
+                Legend("Profile", cls="fieldset-legend"),
+                Label("Name", cls="fieldset-label"),
+                Input(cls="input input-bordered w-full")(
                     placeholder="John Doe",
                     id="name",
-                    cls="input input-bordered w-full",
                 ),
-                P(cls="text-sm opacity-70 mt-1")(
-                    "This is your display name. You can change this later.",
+                Label("Bio", cls="fieldset-label mt-1"),
+                Textarea(cls="textarea textarea-bordered w-full h-24")(
+                    placeholder="Tell us a little bit about yourself",
+                    id="bio",
                 ),
             )
         case 2:
             return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
-                Legend("Contact Details", cls="fieldset-legend"),
-                Label("Phone Number", cls="fieldset-label"),
-                Input(
-                    placeholder="+1 (555) 000-0000",
-                    id="phone",
-                    cls="input input-bordered w-full",
+                Legend("Habit Details", cls="fieldset-legend"),
+                Label("What do you want to achieve?", cls="fieldset-label"),
+                Textarea(cls="textarea textarea-bordered w-full h-32")(
+                    placeholder="Be honest, realistic, and precise.",
+                    id="habit_details",
+                ),
+                Label("Time Frame", cls="fieldset-label"),
+                Select(
+                    Option("--", disabled=True, selected=True),
+                    Option("1 week"),
+                    Option("1 month"),
+                    Option("3 months"),
+                    Option("6 months"),
+                    Option("1 year"),
+                    Option("3 years"),
+                    Option("5 years"),
+                    cls="select select-bordered w-full",
                 ),
                 P(cls="text-sm opacity-70 mt-1")(
-                    "We'll use this for important notifications and 2FA.",
+                    "How long are you committing to establishing this habit?",
                 ),
             )
         case 3:
             return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
-                Legend("Profile", cls="fieldset-legend"),
-                Label("Bio", cls="fieldset-label"),
-                TextArea(
-                    id="bio",
-                    placeholder="Tell us a little bit about yourself",
-                    cls="textarea textarea-bordered w-full h-24",
-                ),
-                P(cls="text-sm opacity-70 mt-1")(
-                    "This will be visible on your public profile.",
-                ),
-            )
-        case 4:
-            return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
                 Legend("Preferences", cls="fieldset-legend"),
-                Label("Timezone", cls="fieldset-label"),
-                Select(
-                    Option("Select timezone", value=""),
-                    Option("UTC", value="UTC"),
-                    Option("UTC-5", value="UTC-5"),
-                    Option("UTC+1", value="UTC+1"),
-                    id="timezone",
-                    cls="select select-bordered w-full",
+                Label("Delivery Time", cls="fieldset-label mt-4"),
+                Div(cls="join w-full")(
+                    Input(
+                        type="time",
+                        id="delivery_time",
+                        value="09:00",
+                        cls="input input-bordered join-item w-full",
+                    ),
+                    Select(
+                        Option("AM", value="AM", selected=True),
+                        Option("PM", value="PM"),
+                        id="time_period",
+                        cls="select select-bordered join-item",
+                    ),
                 ),
                 P(cls="text-sm opacity-70 mt-1")(
-                    "Choose your local timezone for accurate scheduling.",
+                    "When would you like to receive your daily motivation?",
+                ),
+                Label("Email Style", cls="fieldset-label mt-4"),
+                # Formality Slider
+                Label("Formality", cls="label mt-4"),
+                Div(cls="w-full")(
+                    Input(
+                        type="range",
+                        min="0",
+                        max="100",
+                        value="50",
+                        cls="range range-primary",
+                        id="formality",
+                    ),
+                    Div(cls="flex justify-between px-2 text-xs")(
+                        Span("Casual & Friendly"), Span("Formal & Professional")
+                    ),
+                ),
+                # Assertiveness Slider
+                Label("Assertiveness", cls="label mt-4"),
+                Div(cls="w-full")(
+                    Input(
+                        type="range",
+                        min="0",
+                        max="100",
+                        value="50",
+                        cls="range range-secondary",
+                        id="assertiveness",
+                    ),
+                    Div(cls="flex justify-between px-2 text-xs")(
+                        Span("Gentle & Supportive"), Span("Direct & Challenging")
+                    ),
+                ),
+                # Intensity Slider
+                Label("Emotional Intensity", cls="label mt-4"),
+                Div(cls="w-full")(
+                    Input(
+                        type="range",
+                        min="0",
+                        max="100",
+                        value="50",
+                        cls="range range-accent",
+                        id="intensity",
+                    ),
+                    Div(cls="flex justify-between px-2 text-xs")(
+                        Span("Calm & Measured"), Span("Passionate & Energetic")
+                    ),
+                ),
+                P(cls="text-sm opacity-70 mt-4")(
+                    "Adjust these sliders to customize the tone and style of your motivational emails.",
                 ),
             )
 
@@ -75,9 +130,8 @@ def SignupForm(user):
                 # Progress indicator at top
                 Ul(cls="steps w-full mb-8")(
                     Li(cls="step step-primary")("Personal Info", data_content="1"),
-                    Li(cls="step")("Contact", data_content="2"),
-                    Li(cls="step")("Profile", data_content="3"),
-                    Li(cls="step")("Preferences", data_content="4"),
+                    Li(cls="step")("Habit", data_content="2"),
+                    Li(cls="step")("Preferences", data_content="3"),
                 ),
                 # Main form content
                 Form(
