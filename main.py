@@ -52,4 +52,5 @@ landing.ar.to_app(app)
 login.ar.to_app(app)
 signup.ar.to_app(app)
 dashboard.ar.to_app(app)
+
 serve()
