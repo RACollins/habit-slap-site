@@ -20,7 +20,7 @@ steps_dict = {
 
 def StepProgress(step_num: int, steps_dict: dict):
     """Generate step indicator for each step in the signup process"""
-    universal_cls = "w-full py-4"
+    universal_cls = "w-full pt-10 pb-4"
     match step_num:
         case 1:
             return mui.Steps(cls=universal_cls)(
@@ -61,13 +61,17 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     placeholder="John Doe",
                     id="name",
                     name="name",
+                    required=True,
                 ),
+                Div(cls="text-error text-sm hidden", id="name-error")("Name is required"),
                 Label("Bio", cls="fieldset-label mt-1"),
                 Textarea(cls="textarea textarea-bordered w-full h-24")(
                     placeholder="Tell us a little bit about yourself",
                     id="bio",
                     name="bio",
+                    required=True,
                 ),
+                Div(cls="text-error text-sm hidden", id="bio-error")("Bio is required"),
             )
         case 2:
             return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
@@ -77,7 +81,9 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     placeholder="Be honest, realistic, and precise.",
                     id="habit_details",
                     name="habit_details",
+                    required=True,
                 ),
+                Div(cls="text-error text-sm hidden", id="habit_details-error")("This field is required"),
                 Label("Time Frame", cls="fieldset-label"),
                 Select(
                     Option("--", disabled=True, selected=True, value=""),
@@ -91,7 +97,9 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     cls="select select-bordered w-full",
                     id="timeframe",
                     name="timeframe",
+                    required=True,
                 ),
+                Div(cls="text-error text-sm hidden", id="timeframe-error")("Please select a time frame"),
                 P(cls="text-sm opacity-70 mt-1")(
                     "How long are you committing to establishing this habit?",
                 ),
@@ -206,11 +214,11 @@ def SignUpForm(step_num: int, form_data=None, session=None):
     else:
         nav_buttons(Div())  # Empty div as placeholder
 
-    # Next/Submit button
+    # Next/Submit button - will be enabled/disabled by JavaScript
     if step_num < 3:
-        nav_buttons(Button("Next", cls="btn btn-primary", type="submit"))
+        nav_buttons(Button("Next", cls="btn btn-primary", type="submit", id="next-button"))
     else:
-        nav_buttons(Button("Submit", cls="btn btn-success", type="submit"))
+        nav_buttons(Button("Submit", cls="btn btn-success", type="submit", id="next-button"))
 
     # Create the form with the current step content and navigation
     return Form(
@@ -229,21 +237,16 @@ def SignUpForm(step_num: int, form_data=None, session=None):
 def SignUpPage(step_num=1, form_data=None, session=None):
     """Complete signup page with progress indicator and form"""
     # Create container with fixed progress at top and scrollable form below
-    return mui.Titled(
-        f"Sign Up - {steps_dict[step_num]}",
-        Div(cls="container mx-auto max-w-md")(
-            # Fixed progress indicator at the top
-            Div(
-                cls="sticky top-0 bg-background z-10 shadow-sm", id="progress-indicator"
-            )(
-                StepProgress(step_num, steps_dict),
-            ),
-            # Form container with padding
-            Div(cls="p-4", id="signup-container")(
-                # Container for form content that will be updated by HTMX
-                Div(id="form-content")(
-                    SignUpForm(step_num, form_data, session),
-                ),
+    return Div(cls="container mx-auto max-w-md")(
+        # Fixed progress indicator at the top
+        Div(cls="sticky top-0 bg-background z-10 shadow-sm", id="progress-indicator")(
+            StepProgress(step_num, steps_dict),
+        ),
+        # Form container with padding
+        Div(cls="p-4", id="signup-container")(
+            # Container for form content that will be updated by HTMX
+            Div(id="form-content")(
+                SignUpForm(step_num, form_data, session),
             ),
         ),
     )
@@ -382,17 +385,14 @@ def render_step(step: int, session):
 @ar.get("/signup/success")
 def success():
     """Display success message after completing signup"""
-    return Titled(
-        "Signup Complete",
-        Div(cls="container mx-auto max-w-md p-4")(
-            Div(cls="text-center p-8 bg-card rounded-box shadow-lg")(
-                H2("Thank You for Signing Up!", cls="text-2xl font-bold"),
-                P(cls="my-4")("Your account has been created successfully."),
-                P(cls="mb-4")(
-                    "You will receive your first motivational message according to your preferences."
-                ),
-                # Use onclick with JavaScript redirect instead of hx_get
-                A("Go to Dashboard", cls="btn btn-primary", href="/dashboard"),
+    return Div(cls="container mx-auto max-w-md p-4")(
+        Div(cls="text-center p-8 bg-card rounded-box shadow-lg")(
+            H2("Thank You for Signing Up!", cls="text-2xl font-bold"),
+            P(cls="my-4")("Your account has been created successfully."),
+            P(cls="mb-4")(
+                "You will receive your first motivational message according to your preferences."
             ),
+            # Use onclick with JavaScript redirect instead of hx_get
+            A("Go to Dashboard", cls="btn btn-primary", href="/dashboard"),
         ),
     )

@@ -42,12 +42,15 @@ theme_hdrs = set_theme(theme_hdrs, selected_theme)
 ### Bounce animation
 bounce_css = Link(rel="stylesheet", href="/css/animations.css", type="text/css")
 
-### Timezone detection script
+### JavaScript includes
 timezone_js = Script(src="/static/js/timezone.js")
+form_validation_js = Script(src="/static/js/form_validation.js")
 
 ### Set up FastHTML app
 app, rt = fast_app(
-    live=True, pico=False, hdrs=(theme_hdrs, custom_theme_css, bounce_css, timezone_js)
+    live=True, 
+    pico=False, 
+    hdrs=(theme_hdrs, custom_theme_css, bounce_css, timezone_js, form_validation_js)
 )
 
 ### Set up routes
