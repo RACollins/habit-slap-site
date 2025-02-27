@@ -45,12 +45,13 @@ bounce_css = Link(rel="stylesheet", href="/css/animations.css", type="text/css")
 ### JavaScript includes
 timezone_js = Script(src="/static/js/timezone.js")
 form_validation_js = Script(src="/static/js/form_validation.js")
+dashboard_js = Script(src="/static/js/dashboard.js")
 
 ### Set up FastHTML app
 app, rt = fast_app(
-    live=True, 
-    pico=False, 
-    hdrs=(theme_hdrs, custom_theme_css, bounce_css, timezone_js, form_validation_js)
+    live=True,
+    pico=False,
+    hdrs=(theme_hdrs, custom_theme_css, bounce_css, timezone_js, form_validation_js, dashboard_js),
 )
 
 ### Set up routes

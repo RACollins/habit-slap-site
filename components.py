@@ -15,29 +15,24 @@ def TopBar():
 
 
 def DaisyTopBar():
-    return Div(
-        Div(
+    return Div(cls="navbar bg-background")(
+        Div(cls="flex-1")(
             A("Habit Slap", cls="btn btn-ghost text-xl", href="/"),
-            cls="flex-1",
         ),
-        Div(
-            Ul(
+        Div(cls="flex-none")(
+            Ul(cls="menu menu-horizontal px-1")(
                 Li(A("Login", href="/login")),
                 Li(
                     Details(
                         Summary("Parent"),
-                        Ul(
+                        Ul(cls="bg-background rounded-t-none p-2")(
                             Li(A("Link 1")),
                             Li(A("Link 2")),
-                            cls="bg-base-100 rounded-t-none p-2",
                         ),
                     )
                 ),
-                cls="menu menu-horizontal px-1",
             ),
-            cls="flex-none",
         ),
-        cls="navbar bg-base-100",
     )
 
 
@@ -135,19 +130,17 @@ def FAQComp(question, answer):
 def PricingCard(plan, price, features):
     return Card(
         Div(cls="p-12")(  # Added padding container
-            DivVStacked(  # Center and vertically stack the plan name and price
+            DivVStacked(cls="space-y-1")(  # Center and vertically stack the plan name and price
                 H2(plan),
                 H3(price, cls="text-primary"),
                 P("per month"),
-                cls="space-y-1",
             ),
             # DivHStacked makes green check and feature Li show up on same row instead of newline
-            Ul(
+            Ul(cls="space-y-4 my-6")(  # Added vertical margin
                 *[
                     DivHStacked(UkIcon("check", cls="text-green-500 mr-2"), Li(feature))
                     for feature in features
                 ],
-                cls="space-y-4 my-6",  # Added vertical margin
             ),
             Button(
                 "Subscribe Now",
