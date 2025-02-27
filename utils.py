@@ -1,5 +1,7 @@
 from fasthtml.common import *
 import json
+import datetime
+import pytz
 
 
 def set_theme(theme_hdrs: list[Script], selected_theme: str) -> list[Script]:
@@ -42,3 +44,35 @@ def set_theme(theme_hdrs: list[Script], selected_theme: str) -> list[Script]:
     """
     theme_hdrs[5] = Script(init_script)
     return theme_hdrs
+
+
+def convert_local_to_utc(date_str, time_str, timezone):
+    """
+    Convert a local date and time to UTC ISO format
+
+    Args:
+        date_str: Date in format YYYY-MM-DD
+        time_str: Time in format HH:MM
+        timezone: Timezone string (e.g., 'America/New_York')
+
+    Returns:
+        UTC datetime in ISO format with timezone info (e.g., '2025-01-29T08:25:00+00:00')
+    """
+    if not timezone:
+        timezone = "UTC"  # Default to UTC if no timezone provided
+
+    # Parse the date and time strings
+    local_datetime_str = f"{date_str} {time_str}"
+    local_datetime = datetime.datetime.strptime(local_datetime_str, "%Y-%m-%d %H:%M")
+
+    # Get the timezone object
+    tz = pytz.timezone(timezone)
+
+    # Localize the datetime to make it timezone-aware
+    local_datetime = tz.localize(local_datetime)
+
+    # Convert to UTC
+    utc_datetime = local_datetime.astimezone(pytz.UTC)
+
+    # Return in ISO format
+    return utc_datetime.isoformat()
