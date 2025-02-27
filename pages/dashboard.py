@@ -49,7 +49,7 @@ def SidebarContent():
 
 def MainContent():
     return Div(cls="flex flex-col drawer-content h-screen")(
-        Div(cls="w-full navbar bg-background")(
+        Div(cls="w-full navbar-center bg-background")(
             Div(cls="flex-none")(
                 Label(
                     cls="btn btn-square btn-ghost drawer-button transition-transform",
@@ -60,7 +60,7 @@ def MainContent():
                     Lucide("chevron-right")
                 ),
             ),
-            Div(cls="flex-1 px-2 mx-2 text-xl font-bold")("Dashboard"),
+            Div(cls="flex-1 px-2 mx-2 text-xl text-center font-bold")(H1("Dashboard")),
         ),
         Div(cls="p-4 flex-grow")(
             # Content sections - only one will be visible at a time
