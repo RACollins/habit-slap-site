@@ -36,7 +36,7 @@ class DynamoHandler:
             update_parts = []
             expression_values = {}
             expression_names = {}
-            
+
             # Build the update expression
             for key, value in update_data.items():
                 if key != "email":  # Skip the primary key
@@ -44,7 +44,7 @@ class DynamoHandler:
                     safe_key = key.replace("-", "_")
                     attr_name = f"#attr_{safe_key}"
                     attr_value = f":val_{safe_key}"
-                    
+
                     update_parts.append(f"{attr_name} = {attr_value}")
                     expression_names[attr_name] = key
                     expression_values[attr_value] = value
