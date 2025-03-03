@@ -51,7 +51,14 @@ dashboard_js = Script(src="/static/js/dashboard.js")
 app, rt = fast_app(
     live=True,
     pico=False,
-    hdrs=(theme_hdrs, custom_theme_css, bounce_css, timezone_js, form_validation_js, dashboard_js),
+    hdrs=(
+        theme_hdrs,
+        custom_theme_css,
+        bounce_css,
+        timezone_js,
+        form_validation_js,
+        dashboard_js,
+    ),
 )
 
 ### Set up routes
