@@ -70,7 +70,7 @@ def SidebarContent():
                             href="#",  # Prevent navigation but keep styling
                         )(Lucide("trash-2", cls="mr-2"), "Delete Account")
                     ),
-                    Div(cls="collapse-content pt-2")(
+                    Div(cls="collapse-content")(
                         P(
                             cls="text-sm text-warning mb-4",
                         )("Warning: This action cannot be undone."),
