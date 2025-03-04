@@ -15,8 +15,8 @@ db = DynamoHandler()
 
 def SidebarContent():
     return Div(cls="h-full")(
-        Div(cls="text-xl font-bold p-4 border-b")("Settings"),
-        Ul(cls="menu p-4 w-80 min-h-full bg-base-200 text-base-content")(
+        Div(cls="text-xl font-bold p-4 border-b")("Habit Slap"),
+        Ul(cls="menu p-4 w-80 min-h-full bg-card text-card-foreground")(
             Li()(
                 A(
                     cls="sidebar-link",
@@ -29,7 +29,11 @@ def SidebarContent():
                     cls="sidebar-link",
                     href="#habit",
                     data_target="habit-content",
-                )(Div(cls="flex items-center")(Lucide("calendar", cls="mr-2"), "Habit"))
+                )(
+                    Div(cls="flex items-center")(
+                        Lucide("pencil-line", cls="mr-2"), "Habit"
+                    )
+                )
             ),
             Li()(
                 A(
@@ -41,6 +45,66 @@ def SidebarContent():
                         Lucide("settings", cls="mr-2"), "Preferences"
                     )
                 )
+            ),
+            Div(cls="divider my-2"),
+            Li()(
+                A(
+                    href="/signout",
+                    hx_post="/signout",
+                    hx_confirm="Are you sure you want to sign out?",
+                )(
+                    Div(cls="flex items-center")(
+                        Lucide("log-out", cls="mr-2"), "Sign out"
+                    )
+                )
+            ),
+            Li()(
+                # Collapse component for delete account
+                Div(cls="collapse bg-card")(
+                    Input(type="checkbox", cls="peer"),
+                    Div(
+                        cls="collapse-title p-0",  # Remove default padding
+                    )(
+                        A(
+                            cls="flex items-center text-error",
+                            href="#",  # Prevent navigation but keep styling
+                        )(Lucide("trash-2", cls="mr-2"), "Delete Account")
+                    ),
+                    Div(cls="collapse-content pt-2")(
+                        P(
+                            cls="text-sm text-warning mb-4",
+                        )("Warning: This action cannot be undone."),
+                        Button(
+                            type="button",
+                            cls="btn btn-error btn-sm w-full",
+                            onclick="delete_account_modal.showModal()",
+                        )("Delete My Account"),
+                        # Modal for final confirmation
+                        Dialog(
+                            cls="modal",
+                            id="delete_account_modal",
+                        )(
+                            Div(cls="modal-box")(
+                                H3(cls="font-bold text-lg")("Confirm Account Deletion"),
+                                P(cls="py-4")(
+                                    "Are you sure you want to delete your account? This action cannot be undone."
+                                ),
+                                Div(cls="modal-action")(
+                                    Button(
+                                        "Cancel",
+                                        cls="btn",
+                                        onclick="delete_account_modal.close()",
+                                    ),
+                                    Button(
+                                        "Delete",
+                                        cls="btn btn-error",
+                                        hx_post="/delete_account",
+                                    ),
+                                ),
+                            ),
+                        ),
+                    ),
+                ),
             ),
         ),
     )
@@ -56,7 +120,7 @@ def PreferencesContent(user):
     intensity = user.get("intensity", "50")
 
     return Div(cls="hero-content")(
-        Div(cls="card w-full bg-card shadow-xl")(
+        Div(cls="card w-full bg-card text-card-foreground shadow-xl")(
             Div(cls="card-body")(
                 Form(
                     action="/dashboard/update",
@@ -316,7 +380,7 @@ def MainContent(user, session):
                     aria_label="Toggle sidebar",
                 )(Lucide("chevron-right")),
             ),
-            Div(cls="flex-1 px-2 mx-2 text-xl text-center font-bold")(H1("Dashboard")),
+            Div(cls="flex-1 px-2 mx-2 text-4xl text-center font-bold")(H1("Dashboard")),
         ),
         Div(cls="p-4 flex-grow")(
             # Content sections - only one will be visible at a time
@@ -352,7 +416,7 @@ def DashboardPage(user, session):
 @ar.get("/dashboard")
 def get(session):
     user = db.get_user(session["auth"])
-    return DashboardPage(user, session)
+    return Title("Dashboard"), DashboardPage(user, session)
 
 
 @ar.post("/dashboard/update")
@@ -412,3 +476,26 @@ async def update_dashboard(request, session):
 
     except Exception as e:
         return f"Error saving dashboard information: {str(e)}"
+
+
+@ar.post("/signout")
+def signout(session):
+    email = session["auth"]  # Get email before deleting from session
+    # Update user's active status to False
+    db.update_user(email, {"is_active": False})
+    del session["auth"]
+    return HttpHeader("HX-Redirect", "/login")
+
+
+@ar.post("/delete_account")
+def delete_account(session):
+    if not session.get("auth"):
+        return RedirectResponse("/login")
+
+    email = session["auth"]
+    try:
+        db.delete_user(email)
+        del session["auth"]
+        return HttpHeader("HX-Redirect", "/")
+    except Exception as e:
+        return f"Error deleting account: {str(e)}"
