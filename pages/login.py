@@ -169,7 +169,8 @@ def get(session, token: str):
             user["email"],
             {"magic_link_token": None, "magic_link_expiry": None, "is_active": True},
         )
-        if not user.get("goal") or not user.get("next_email_date"):
+        # Check if user has already signed up by looking for the name field
+        if not user.get("name"):
             return RedirectResponse("/signup")
         return RedirectResponse("/dashboard")
     return "Invalid or expired magic link"

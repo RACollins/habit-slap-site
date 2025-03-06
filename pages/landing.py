@@ -60,13 +60,11 @@ def HowItWorks():
             "bottom": "No more excuses! Build that habit! Attack your week! Also works well for quitting bad habits.",
         },
     }
-    return Div(cls="container mx-auto py-16")(
+    return Div(cls="container mx-auto py-16", id="how-it-works")(
         H2("How it Works", cls="text-4xl font-bold text-center mb-12"),
-        Div(
+        Div(cls="flex flex-col md:flex-row gap-8 justify-center items-stretch px-4")(
             *[HowItWorksCard(card_content[f"step{i+1}"]) for i in range(3)],
-            cls="flex flex-col md:flex-row gap-8 justify-center items-stretch px-4",
         ),
-        id="how-it-works",
     )
 
 
@@ -125,14 +123,13 @@ def Testimonials():
             "What our users are saying about us (may be fake)",
             cls="text-center text-muted-foreground mb-12",
         ),
-        Div(
+        Div(cls="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8")(
             *[
                 TestimonialCard(
                     text=t["text"], author=t["author"], username=t["username"]
                 )
                 for t in testimonials
             ],
-            cls="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8",
         ),
     )
 
@@ -170,11 +167,10 @@ def FAQ():
 def Pricing():
     return Div(cls="container mx-auto py-16 px-4")(
         H2("Pricing", cls="text-4xl font-bold text-center mb-8"),
-        Div(
+        Div(cls="flex flex-col md:flex-row gap-8 justify-center items-stretch")(
             PricingCard("Free", "$0", ["1 goal", "Daily emails", "No commitment"]),
             PricingCard("Premium", "$10", ["1 goal", "Daily emails", "No commitment"]),
             PricingCard("Human", "$100", ["1 goal", "Daily emails", "No commitment"]),
-            cls="flex flex-col md:flex-row gap-8 justify-center items-stretch",
         ),
     )
 
@@ -187,10 +183,10 @@ def get():
         DaisyTopBar(),
         MainSignUp(),
         HowItWorks(),
-        Div(Div(cls="divider"), cls="mx-16"),
+        Div(cls="mx-16")(Div(cls="divider")),
         Testimonials(),
-        Div(Div(cls="divider"), cls="mx-16"),
+        Div(cls="mx-16")(Div(cls="divider")),
         FAQ(),
-        Div(Div(cls="divider"), cls="mx-16"),
+        Div(cls="mx-16")(Div(cls="divider")),
         Pricing(),
     )

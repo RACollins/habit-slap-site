@@ -32,19 +32,25 @@ class DynamoHandler:
 
     def update_user(self, email: str, update_data: Dict[str, Any]) -> bool:
         try:
-            update_expression = "SET "
+            # Initialize update components
+            update_parts = []
             expression_values = {}
+            expression_names = {}
 
+            # Build the update expression
             for key, value in update_data.items():
                 if key != "email":  # Skip the primary key
-                    update_expression += f"#{key} = :{key}, "
-                    expression_values[f":{key}"] = value
+                    # Create safe attribute names (replace invalid characters)
+                    safe_key = key.replace("-", "_")
+                    attr_name = f"#attr_{safe_key}"
+                    attr_value = f":val_{safe_key}"
 
-            # Remove trailing comma and space
-            update_expression = update_expression[:-2]
+                    update_parts.append(f"{attr_name} = {attr_value}")
+                    expression_names[attr_name] = key
+                    expression_values[attr_value] = value
 
-            # Create expression attribute names
-            expression_names = {f"#{k}": k for k in update_data.keys() if k != "email"}
+            # Combine all parts into the update expression
+            update_expression = "SET " + ", ".join(update_parts)
 
             self.table.update_item(
                 Key={"email": email},

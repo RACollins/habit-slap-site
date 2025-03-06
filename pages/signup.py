@@ -1,6 +1,7 @@
 from fasthtml.common import *
 import fasthtml
 import datetime
+import pytz
 
 # from monsterui.all import *
 import monsterui.all as mui
@@ -63,7 +64,9 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     name="name",
                     required=True,
                 ),
-                Div(cls="text-error text-sm hidden", id="name-error")("Name is required"),
+                Div(cls="text-error text-sm hidden", id="name-error")(
+                    "Name is required"
+                ),
                 Label("Bio", cls="fieldset-label mt-1"),
                 Textarea(cls="textarea textarea-bordered w-full h-24")(
                     placeholder="Tell us a little bit about yourself",
@@ -83,7 +86,9 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     name="habit_details",
                     required=True,
                 ),
-                Div(cls="text-error text-sm hidden", id="habit_details-error")("This field is required"),
+                Div(cls="text-error text-sm hidden", id="habit_details-error")(
+                    "This field is required"
+                ),
                 Label("Time Frame", cls="fieldset-label"),
                 Select(
                     Option("--", disabled=True, selected=True, value=""),
@@ -99,7 +104,9 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     name="timeframe",
                     required=True,
                 ),
-                Div(cls="text-error text-sm hidden", id="timeframe-error")("Please select a time frame"),
+                Div(cls="text-error text-sm hidden", id="timeframe-error")(
+                    "Please select a time frame"
+                ),
                 P(cls="text-sm opacity-70 mt-1")(
                     "How long are you committing to establishing this habit?",
                 ),
@@ -108,21 +115,12 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
             return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
                 Legend(steps_dict[3], cls="fieldset-legend"),
                 Label("Delivery Time", cls="fieldset-label mt-4"),
-                Div(cls="join w-full")(
-                    Input(
-                        type="time",
-                        id="delivery_time",
-                        name="delivery_time",
-                        value="09:00",
-                        cls="input input-bordered join-item w-full",
-                    ),
-                    Select(
-                        Option("AM", value="AM", selected=True),
-                        Option("PM", value="PM"),
-                        id="time_period",
-                        name="time_period",
-                        cls="select select-bordered join-item",
-                    ),
+                Input(
+                    type="time",
+                    id="delivery_time",
+                    name="delivery_time",
+                    value="09:00",
+                    cls="input input-bordered w-full",
                 ),
                 P(cls="text-sm opacity-70 mt-1")(
                     "When would you like to receive your daily motivation?",
@@ -216,9 +214,13 @@ def SignUpForm(step_num: int, form_data=None, session=None):
 
     # Next/Submit button - will be enabled/disabled by JavaScript
     if step_num < 3:
-        nav_buttons(Button("Next", cls="btn btn-primary", type="submit", id="next-button"))
+        nav_buttons(
+            Button("Next", cls="btn btn-primary", type="submit", id="next-button")
+        )
     else:
-        nav_buttons(Button("Submit", cls="btn btn-success", type="submit", id="next-button"))
+        nav_buttons(
+            Button("Submit", cls="btn btn-success", type="submit", id="next-button")
+        )
 
     # Create the form with the current step content and navigation
     return Form(
@@ -262,7 +264,7 @@ def get(session=None):
     if not session or "auth" not in session:
         return RedirectResponse("/login")
 
-    return SignUpPage(step_num=1, form_data=form_data, session=session)
+    return Title("Sign Up"), SignUpPage(step_num=1, form_data=form_data, session=session)
 
 
 # Process form submission for each step
@@ -272,8 +274,23 @@ async def process_step(request, step: int, session):
     # Get the form data
     form_data = await request.form()
 
-    # Convert form data to dict
-    form_dict = dict(form_data)
+    # Convert form data to dict and filter out unused fields
+    form_dict = {
+        key: value
+        for key, value in form_data.items()
+        if key
+        in [
+            "email",
+            "name",
+            "bio",
+            "habit_details",
+            "timeframe",
+            "delivery_time",
+            "formality",
+            "assertiveness",
+            "intensity",
+        ]
+    }
 
     # Initialize signup data in session if not exists
     if "signup_data" not in session:
@@ -307,36 +324,37 @@ async def process_step(request, step: int, session):
             user_data = session["signup_data"]
 
             # Process delivery time to convert to UTC format
-            if "delivery_time" in user_data and "time_period" in user_data:
-                # Get delivery time components
+            if "delivery_time" in user_data:
+                # Get delivery time and timezone
                 delivery_time = user_data["delivery_time"]  # Format: HH:MM
-                time_period = user_data["time_period"]  # AM or PM
-
-                # Convert 12-hour format to 24-hour if needed
-                hour, minute = map(int, delivery_time.split(":"))
-                if time_period == "PM" and hour < 12:
-                    hour += 12
-                elif time_period == "AM" and hour == 12:
-                    hour = 0
-
-                # Format as 24-hour time
-                delivery_time_24h = f"{hour:02d}:{minute:02d}"
-
-                # Get current date in YYYY-MM-DD format
-                today = datetime.datetime.now().strftime("%Y-%m-%d")
-
-                # Get user's timezone from session
                 timezone = session.get("timezone", "UTC")
 
-                # Convert to UTC
-                utc_timestamp = convert_local_to_utc(today, delivery_time_24h, timezone)
+                # Parse the delivery time
+                hour, minute = map(int, delivery_time.split(":"))
 
-                # Update user data with UTC timestamp
-                user_data["delivery_time_utc"] = utc_timestamp
+                # Get current time in user's timezone
+                user_tz = pytz.timezone(timezone)
+                now = datetime.datetime.now(user_tz)
 
-                # Keep original values for reference if needed
-                user_data["delivery_time_original"] = delivery_time
-                user_data["time_period_original"] = time_period
+                # Create a datetime for today at the delivery time in user's timezone
+                today_delivery = now.replace(
+                    hour=hour, minute=minute, second=0, microsecond=0
+                )
+
+                # If delivery time is in the past, set for tomorrow
+                if today_delivery < now:
+                    next_email_date = today_delivery + datetime.timedelta(days=1)
+                else:
+                    next_email_date = today_delivery
+
+                # Convert next_email_date to UTC before saving
+                next_email_date_utc = next_email_date.astimezone(pytz.UTC)
+                user_data["next_email_date"] = next_email_date_utc.isoformat()
+
+                # Convert delivery time to UTC for storage
+                utc_time = convert_local_to_utc(delivery_time, timezone)
+                user_data["delivery_time_utc"] = utc_time
+                user_data.pop("delivery_time", None)
 
             # Save to database - using correct method name
             db.create_user(user_data)
