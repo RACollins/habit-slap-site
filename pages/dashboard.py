@@ -1,5 +1,6 @@
 from fasthtml.common import *
 import fasthtml
+import pytz
 
 # from monsterui.all import *
 from lucide_fasthtml import Lucide
@@ -110,11 +111,26 @@ def SidebarContent():
     )
 
 
-def PreferencesContent(user):
+def PreferencesContent(user, session):
     """Generate the preferences section content"""
     # Get user preferences with default values if not set
-    delivery_time = user.get("delivery_time_original", "09:00")
-    time_period = user.get("time_period_original", "AM")
+    utc_time = user.get("delivery_time_utc", "09:00")
+
+    # Convert UTC time to local time for display
+    timezone = session.get("timezone", "UTC")
+
+    # Create a UTC datetime for today with the UTC time
+    utc_dt = datetime.datetime.strptime(utc_time, "%H:%M")
+    utc_today = datetime.datetime.now(pytz.UTC).replace(
+        hour=utc_dt.hour, minute=utc_dt.minute, second=0, microsecond=0
+    )
+
+    # Convert to local time
+    local_time = utc_today.astimezone(pytz.timezone(timezone))
+
+    # Format time in 24-hour format
+    delivery_time = local_time.strftime("%H:%M")
+
     formality = user.get("formality", "50")
     assertiveness = user.get("assertiveness", "50")
     intensity = user.get("intensity", "50")
@@ -133,25 +149,12 @@ def PreferencesContent(user):
                         Legend("Email Preferences", cls="fieldset-legend"),
                         # Delivery Time
                         Label("Delivery Time", cls="fieldset-label"),
-                        Div(cls="join w-full")(
-                            Input(
-                                type="time",
-                                id="delivery_time",
-                                name="delivery_time",
-                                value=delivery_time,
-                                cls="input input-bordered join-item w-full",
-                            ),
-                            Select(
-                                Option(
-                                    "AM", value="AM", selected=(time_period == "AM")
-                                ),
-                                Option(
-                                    "PM", value="PM", selected=(time_period == "PM")
-                                ),
-                                id="time_period",
-                                name="time_period",
-                                cls="select select-bordered join-item",
-                            ),
+                        Input(
+                            type="time",
+                            id="delivery_time",
+                            name="delivery_time",
+                            value=delivery_time,
+                            cls="input input-bordered w-full",
                         ),
                         P(cls="text-sm opacity-70 mb-4")(
                             "When would you like to receive your daily motivation?",
@@ -368,8 +371,6 @@ def HabitContent(user):
 
 
 def MainContent(user, session):
-    user_timezone = session.get("timezone", "UTC")
-
     return Div(cls="flex flex-col drawer-content h-screen")(
         Div(cls="w-full navbar-center bg-background")(
             Div(cls="flex-none")(
@@ -394,7 +395,7 @@ def MainContent(user, session):
             ),
             Div(cls="content-section hidden", id="preferences-content")(
                 H1(cls="text-2xl font-bold")("User Preferences"),
-                PreferencesContent(user),
+                PreferencesContent(user, session),
             ),
         ),
     )
@@ -433,13 +434,13 @@ async def update_dashboard(request, session):
         # Create update data starting with current user data
         update_data = dict(current_user) if current_user else {}
 
-        # Convert form data to dict and filter out any special characters in keys
-        form_dict = {}
-        for key, value in form_data.items():
-            # Skip any keys with special characters or empty values
-            if key.isalnum() or key in [
+        # Convert form data to dict and filter out any special characters or unused fields
+        form_dict = {
+            key: value
+            for key, value in form_data.items()
+            if key
+            in [
                 "delivery_time",
-                "time_period",
                 "habit_details",
                 "timeframe",
                 "name",
@@ -447,24 +448,46 @@ async def update_dashboard(request, session):
                 "formality",
                 "assertiveness",
                 "intensity",
-            ]:
-                form_dict[key] = value
+            ]
+        }
 
         # Update with sanitized form data
         update_data.update(form_dict)
 
         # Handle special cases for preferences section
         if "delivery_time" in form_data:
-            update_data["delivery_time_original"] = form_data["delivery_time"]
-            update_data["time_period_original"] = form_data["time_period"]
-
-            # Convert to UTC timestamp
-            today = datetime.datetime.now().strftime("%Y-%m-%d")
+            # Get delivery time and timezone
+            delivery_time = form_data["delivery_time"]  # Format: HH:MM
             timezone = session.get("timezone", "UTC")
-            utc_timestamp = convert_local_to_utc(
-                today, form_data["delivery_time"], timezone
+
+            # Parse the delivery time
+            hour, minute = map(int, delivery_time.split(":"))
+
+            # Get current time in user's timezone
+            user_tz = pytz.timezone(timezone)
+            now = datetime.datetime.now(user_tz)
+
+            # Create a datetime for today at the delivery time in user's timezone
+            today_delivery = now.replace(
+                hour=hour, minute=minute, second=0, microsecond=0
             )
-            update_data["delivery_time_utc"] = utc_timestamp
+
+            # If delivery time is in the past, set for tomorrow
+            if today_delivery < now:
+                next_email_date = today_delivery + datetime.timedelta(days=1)
+            else:
+                next_email_date = today_delivery
+
+            # Convert next_email_date to UTC before saving
+            next_email_date_utc = next_email_date.astimezone(pytz.UTC)
+            update_data["next_email_date"] = next_email_date_utc.isoformat()
+
+            # Convert delivery time to UTC for storage
+            utc_time = convert_local_to_utc(delivery_time, timezone)
+            update_data["delivery_time_utc"] = utc_time
+
+            # Remove the form field as it's not needed in the database
+            update_data.pop("delivery_time", None)
 
         # Update user data in database
         success = db.update_user(user_email, update_data)
