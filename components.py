@@ -2,7 +2,6 @@ from fasthtml.common import *
 from monsterui.all import *
 import re
 import os
-from config import selected_theme
 
 
 def TopBar():
@@ -112,17 +111,15 @@ hc_colours = load_theme_colors()
 
 
 def FAQComp(question, answer):
-    theme_colors = hc_colours[selected_theme]
-    
     return Div(cls=f"collapse collapse-arrow bg-muted text-muted-foreground")(
         Input(type="checkbox", cls="peer"),
         Div(
             question,
-            cls=f"collapse-title peer-checked:bg-{theme_colors['primary']} peer-checked:text-{theme_colors['primary-foreground']}",
+            cls=f"collapse-title peer-checked:bg-primary peer-checked:text-primary-foreground",
         ),
         Div(
             P(answer),
-            cls=f"collapse-content peer-checked:bg-{theme_colors['primary']} peer-checked:text-{theme_colors['primary-foreground']}",
+            cls=f"collapse-content peer-checked:bg-primary peer-checked:text-primary-foreground",
         ),
     )
 

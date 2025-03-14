@@ -2,7 +2,6 @@ from fasthtml.common import *
 import fasthtml
 import pytz
 
-# from monsterui.all import *
 from lucide_fasthtml import Lucide
 from database.dynamo_handler import DynamoHandler
 import datetime

@@ -3,7 +3,6 @@ import fasthtml
 import datetime
 import pytz
 
-# from monsterui.all import *
 import monsterui.all as mui
 
 from database.dynamo_handler import DynamoHandler

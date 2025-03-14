@@ -1,6 +1,5 @@
 from fasthtml.common import *
 import fasthtml
-from monsterui.all import *
 from components import DaisyTopBar
 import random
 import os
