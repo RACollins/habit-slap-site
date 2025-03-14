@@ -1,20 +1,9 @@
 from fasthtml.common import *
 from monsterui.all import *
-import re
-import os
-
-
-def TopBar():
-    return NavBar(
-        A("Home", href="/"),
-        # A("Theme", href="/theme"),
-        A("Login", href="/login"),
-        brand="Habit Slap",
-    )
 
 
 def DaisyTopBar():
-    return Div(cls="navbar bg-background")(
+    return Div(cls="navbar bg-base-300")(
         Div(cls="flex-1")(
             A("Habit Slap", cls="btn btn-ghost text-xl", href="/"),
         ),
@@ -24,7 +13,7 @@ def DaisyTopBar():
                 Li(
                     Details(
                         Summary("Parent"),
-                        Ul(cls="bg-background rounded-t-none p-2")(
+                        Ul(cls="bg-base-300 rounded-t-none p-2")(
                             Li(A("Link 1")),
                             Li(A("Link 2")),
                         ),
@@ -35,99 +24,53 @@ def DaisyTopBar():
     )
 
 
-def theme_picker():
-    return ThemePicker(
-        custom_themes=[
-            ("Tokyo", "#869de6"),
-        ],
-    )
-
-
 def HowItWorksCard(step):
-    return Div(cls="card bg-card shadow-xl flex-1")(
+    return Div(cls="card bg-base-200 shadow-xl flex-1")(
         Div(cls="card-body items-center text-center")(
             H2(step["top"], cls="card-title"),
             P(step["body"], cls="text-xl my-4"),
-            P(step["bottom"], cls="text-muted-foreground"),
+            P(step["bottom"], cls="text-base-content"),
         )
     )
 
 
 def TestimonialCard(text, author, username):
-    return Div(cls="card bg-card shadow-xl")(
+    return Div(cls="card bg-base-200 shadow-xl")(
         Div(cls="card-body")(
             # Large quotation mark
             Div('"', cls="text-4xl text-primary mb-4"),
             # Testimonial text
-            P(text, cls="text-lg text-foreground mb-4"),
+            P(text, cls="text-lg text-base-content mb-4"),
             # Author info
             Div(cls="mt-auto")(
                 H3(author, cls="font-bold"),
-                P(f"@{username}", cls="text-sm text-muted-foreground"),
+                P(f"@{username}", cls="text-sm text-base-content"),
             ),
         )
     )
 
 
-def extract_theme_colors(css_content):
-    """Extract specific colors from CSS content."""
-    color_vars = {
-        "muted": None,
-        "muted-foreground": None,
-        "primary": None,
-        "primary-foreground": None,
-    }
-
-    # Find all color definitions
-    for line in css_content.split("\n"):
-        for color_name in color_vars.keys():
-            pattern = f"--{color_name}: (.*?);"
-            match = re.search(pattern, line)
-            if match:
-                # Convert "240 13.73% 10%" to "hsl(240,13.73%,10%)"
-                values = match.group(1).strip()
-                color_vars[color_name] = f"[hsl({values.replace(' ', ',')})]"
-
-    return color_vars
-
-
-def load_theme_colors():
-    """Load colors from all theme files."""
-    theme_colors = {}
-    css_dir = "css"
-
-    for filename in os.listdir(css_dir):
-        if filename.endswith("_theme.css"):
-            theme_name = filename.replace("_theme.css", "")
-            with open(os.path.join(css_dir, filename), "r") as f:
-                css_content = f.read()
-                theme_colors[theme_name] = extract_theme_colors(css_content)
-
-    return theme_colors
-
-
-### Load the colors once when the module is imported
-hc_colours = load_theme_colors()
-
-
 def FAQComp(question, answer):
-    return Div(cls=f"collapse collapse-arrow bg-muted text-muted-foreground")(
+    return Div(cls=f"collapse collapse-arrow bg-base-200 text-base-content")(
         Input(type="checkbox", cls="peer"),
         Div(
             question,
-            cls=f"collapse-title peer-checked:bg-primary peer-checked:text-primary-foreground",
+            cls=f"collapse-title peer-checked:bg-primary peer-checked:text-primary-content",
         ),
         Div(
             P(answer),
-            cls=f"collapse-content peer-checked:bg-primary peer-checked:text-primary-foreground",
+            cls=f"collapse-content peer-checked:bg-primary peer-checked:text-primary-content",
         ),
     )
+
 
 ### Using MonsterUI Card, not DaisyUI Card
 def PricingCard(plan, price, features):
     return Card(
         Div(cls="p-12")(  # Added padding container
-            DivVStacked(cls="space-y-1")(  # Center and vertically stack the plan name and price
+            DivVStacked(
+                cls="space-y-1"
+            )(  # Center and vertically stack the plan name and price
                 H2(plan),
                 H3(price, cls="text-primary"),
                 P("per month"),

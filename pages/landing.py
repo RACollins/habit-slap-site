@@ -1,6 +1,5 @@
 from fasthtml.common import *
 import fasthtml
-from monsterui.all import *
 from components import (
     DaisyTopBar,
     HowItWorksCard,
@@ -15,11 +14,11 @@ ar = fasthtml.APIRouter()
 
 
 def MainSignUp():
-    return Div(cls="hero bg-background min-h-screen")(
+    return Div(cls="hero bg-base-300 min-h-screen")(
         Div(cls="hero-content text-center")(
             Div(cls="max-w-md")(
-                H1("Habit Slap", cls="text-5xl font-bold"),
-                P(cls="flex items-center justify-center gap-2 py-3")(
+                H1("Habit Slap", cls="text-base-content text-5xl font-bold"),
+                P(cls="flex items-center justify-center gap-2 py-3 text-base-content")(
                     "Motivation like a slap in the face",
                     Lucide("hand", cls="text-primary"),
                     Lucide("sparkles", cls="text-primary"),
@@ -27,11 +26,11 @@ def MainSignUp():
                 A(
                     Button(
                         "Get Started",
-                        cls="btn btn-primary text-primary-foreground py-3",
+                        cls="btn btn-primary text-primary-content py-3",
                     ),
                     href="/login",
                 ),
-                P("Scroll down to learn more", cls="text-accent py-3"),
+                P("Scroll down to learn more", cls="text-secondary py-3"),
                 A(
                     "↓",
                     href="#how-it-works",
@@ -60,8 +59,10 @@ def HowItWorks():
             "bottom": "No more excuses! Build that habit! Attack your week! Also works well for quitting bad habits.",
         },
     }
-    return Div(cls="container mx-auto py-16", id="how-it-works")(
-        H2("How it Works", cls="text-4xl font-bold text-center mb-12"),
+    return Div(cls="container mx-auto py-16 bg-base-300", id="how-it-works")(
+        H2(
+            "How it Works", cls="text-4xl font-bold text-center mb-12 text-base-content"
+        ),
         Div(cls="flex flex-col md:flex-row gap-8 justify-center items-stretch px-4")(
             *[HowItWorksCard(card_content[f"step{i+1}"]) for i in range(3)],
         ),
@@ -117,11 +118,11 @@ def Testimonials():
         },
     ]
 
-    return Div(cls="container mx-auto py-16 px-4")(
-        H2("Testimonials", cls="text-4xl font-bold text-center mb-4"),
+    return Div(cls="container mx-auto py-16 px-4 bg-base-300")(
+        H2("Testimonials", cls="text-4xl font-bold text-center mb-4 text-base-content"),
         P(
             "What our users are saying about us (may be fake)",
-            cls="text-center text-muted-foreground mb-12",
+            cls="text-center text-base-content mb-12",
         ),
         Div(cls="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-8")(
             *[
@@ -153,8 +154,8 @@ def FAQ():
             "answer": "Every day, but you can change this in your dashboard.",
         },
     }
-    return Div(cls="container mx-auto py-16 px-4")(
-        H2("FAQ", cls="text-4xl font-bold text-center mb-8"),
+    return Div(cls="container mx-auto py-16 px-4 bg-base-300")(
+        H2("FAQ", cls="text-4xl font-bold text-center mb-8 text-base-content"),
         Div(cls="space-y-4")(
             *[
                 FAQComp(qa_dict["question"], qa_dict["answer"])
@@ -165,8 +166,8 @@ def FAQ():
 
 
 def Pricing():
-    return Div(cls="container mx-auto py-16 px-4")(
-        H2("Pricing", cls="text-4xl font-bold text-center mb-8"),
+    return Div(cls="container mx-auto py-16 px-4 bg-base-300")(
+        H2("Pricing", cls="text-4xl font-bold text-center mb-8 text-base-content"),
         Div(cls="flex flex-col md:flex-row gap-8 justify-center items-stretch")(
             PricingCard("Free", "$0", ["1 goal", "Daily emails", "No commitment"]),
             PricingCard("Premium", "$10", ["1 goal", "Daily emails", "No commitment"]),

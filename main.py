@@ -1,8 +1,6 @@
 from fasthtml.common import *
-from monsterui.all import *
 import argparse
 import subprocess
-from utils import append_themes
 
 ### Import pages
 from pages import landing, login, signup, dashboard
@@ -76,11 +74,12 @@ app, rt = fast_app(
         bounce_css,
         tailwind_css,
         theme_css,
+        Style("body { background-color: var(--color-base-300) !important; }"), # <-- force background color
         timezone_js,
         form_validation_js,
         dashboard_js,
     ),
-    htmlkw=dict(lang="en", dir="ltr", data_theme="light"),
+    htmlkw=dict(lang="en", dir="ltr", data_theme="alt_dark"),
 )
 
 
