@@ -14,7 +14,7 @@ ar = fasthtml.APIRouter()
 
 
 def MainSignUp():
-    return Div(cls="hero bg-base-300 min-h-screen")(
+    return Div(cls="hero bg-base-200 min-h-screen")(
         Div(cls="hero-content text-center")(
             Div(cls="max-w-md")(
                 H1("Habit Slap", cls="text-base-content text-5xl font-bold"),
@@ -59,7 +59,7 @@ def HowItWorks():
             "bottom": "No more excuses! Build that habit! Attack your week! Also works well for quitting bad habits.",
         },
     }
-    return Div(cls="container mx-auto py-16 bg-base-300", id="how-it-works")(
+    return Div(cls="container mx-auto py-16 bg-base-200", id="how-it-works")(
         H2(
             "How it Works", cls="text-4xl font-bold text-center mb-12 text-base-content"
         ),
@@ -118,7 +118,7 @@ def Testimonials():
         },
     ]
 
-    return Div(cls="container mx-auto py-16 px-4 bg-base-300")(
+    return Div(cls="container mx-auto py-16 px-4 bg-base-200")(
         H2("Testimonials", cls="text-4xl font-bold text-center mb-4 text-base-content"),
         P(
             "What our users are saying about us (may be fake)",
@@ -154,7 +154,7 @@ def FAQ():
             "answer": "Every day, but you can change this in your dashboard.",
         },
     }
-    return Div(cls="container mx-auto py-16 px-4 bg-base-300")(
+    return Div(cls="container mx-auto py-16 px-4 bg-base-200")(
         H2("FAQ", cls="text-4xl font-bold text-center mb-8 text-base-content"),
         Div(cls="space-y-4")(
             *[
@@ -166,7 +166,7 @@ def FAQ():
 
 
 def Pricing():
-    return Div(cls="container mx-auto py-16 px-4 bg-base-300")(
+    return Div(cls="container mx-auto py-16 px-4 bg-base-200")(
         H2("Pricing", cls="text-4xl font-bold text-center mb-8 text-base-content"),
         Div(cls="flex flex-col md:flex-row gap-8 justify-center items-stretch")(
             PricingCard("Free", "$0", ["1 goal", "Daily emails", "No commitment"]),

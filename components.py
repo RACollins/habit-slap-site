@@ -3,7 +3,7 @@ from monsterui.all import *
 
 
 def DaisyTopBar():
-    return Div(cls="navbar bg-base-300")(
+    return Div(cls="navbar bg-base-200")(
         Div(cls="flex-1")(
             A("Habit Slap", cls="btn btn-ghost text-xl", href="/"),
         ),
@@ -13,7 +13,7 @@ def DaisyTopBar():
                 Li(
                     Details(
                         Summary("Parent"),
-                        Ul(cls="bg-base-300 rounded-t-none p-2")(
+                        Ul(cls="bg-base-200 rounded-t-none p-2")(
                             Li(A("Link 1")),
                             Li(A("Link 2")),
                         ),
@@ -25,7 +25,7 @@ def DaisyTopBar():
 
 
 def HowItWorksCard(step):
-    return Div(cls="card bg-base-200 shadow-xl flex-1")(
+    return Div(cls="card card-border bg-base-100 border-base-300 shadow-xl flex-1")(
         Div(cls="card-body items-center text-center")(
             H2(step["top"], cls="card-title"),
             P(step["body"], cls="text-xl my-4"),
@@ -35,7 +35,7 @@ def HowItWorksCard(step):
 
 
 def TestimonialCard(text, author, username):
-    return Div(cls="card bg-base-200 shadow-xl")(
+    return Div(cls="card card-border bg-base-100 border-base-300 shadow-xl")(
         Div(cls="card-body")(
             # Large quotation mark
             Div('"', cls="text-4xl text-primary mb-4"),
@@ -51,7 +51,9 @@ def TestimonialCard(text, author, username):
 
 
 def FAQComp(question, answer):
-    return Div(cls=f"collapse collapse-arrow bg-base-200 text-base-content")(
+    return Div(
+        cls=f"collapse collapse-arrow border border-base-300 bg-base-100 text-base-content"
+    )(
         Input(type="checkbox", cls="peer"),
         Div(
             question,

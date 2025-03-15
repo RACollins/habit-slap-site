@@ -34,42 +34,36 @@
 }
 
 @layer base {
-  :root:has(input.theme-controller[value="cyberpunk"]:checked),
-  [data-theme="cyberpunk"] {
-    color-scheme: light;
-    --color-base-100: oklch(94.51% 0.179 104.32);
-    --color-base-200: oklch(91.51% 0.179 104.32);
-    --color-base-300: oklch(85.51% 0.179 104.32);
-    --color-base-content: oklch(0% 0 0);
-    --color-primary: oklch(74.22% 0.209 6.35);
-    --color-primary-content: oklch(14.844% 0.041 6.35);
-    --color-secondary: oklch(83.33% 0.184 204.72);
-    --color-secondary-content: oklch(16.666% 0.036 204.72);
-    --color-accent: oklch(71.86% 0.217 310.43);
-    --color-accent-content: oklch(14.372% 0.043 310.43);
-    --color-neutral: oklch(23.04% 0.065 269.31);
-    --color-neutral-content: oklch(94.51% 0.179 104.32);
-    --color-info: oklch(72.06% 0.191 231.6);
-    --color-info-content: oklch(0% 0 0);
-    --color-success: oklch(64.8% 0.15 160);
-    --color-success-content: oklch(0% 0 0);
-    --color-warning: oklch(84.71% 0.199 83.87);
-    --color-warning-content: oklch(0% 0 0);
-    --color-error: oklch(71.76% 0.221 22.18);
-    --color-error-content: oklch(0% 0 0);
-    --radius-selector: 0rem;
-    --radius-field: 0rem;
-    --radius-box: 0rem;
+  :root:has(input.theme-controller[value="grey_ruby"]:checked),
+  [data-theme="grey_ruby"] {
+    color-scheme: dark;
+    --color-base-100: oklch(37% 0.044 257.287);
+    --color-base-200: oklch(27% 0.041 260.031);
+    --color-base-300: oklch(12% 0.042 264.695);
+    --color-base-content: oklch(98% 0.003 247.858);
+    --color-primary: oklch(51% 0.222 16.935);
+    --color-primary-content: oklch(96% 0.015 12.422);
+    --color-secondary: oklch(81% 0.117 11.638);
+    --color-secondary-content: oklch(41% 0.159 10.272);
+    --color-accent: oklch(52% 0.223 3.958);
+    --color-accent-content: oklch(97% 0.014 343.198);
+    --color-neutral: oklch(20% 0 0);
+    --color-neutral-content: oklch(98% 0 0);
+    --color-info: oklch(58% 0.158 241.966);
+    --color-info-content: oklch(97% 0.013 236.62);
+    --color-success: oklch(62% 0.194 149.214);
+    --color-success-content: oklch(98% 0.018 155.826);
+    --color-warning: oklch(68% 0.162 75.834);
+    --color-warning-content: oklch(98% 0.026 102.212);
+    --color-error: oklch(57% 0.245 27.325);
+    --color-error-content: oklch(97% 0.013 17.38);
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.5rem;
     --size-selector: 0.25rem;
     --size-field: 0.25rem;
     --border: 1px;
     --depth: 0;
     --noise: 0;
-  }
-  
-  /* Define bg-background to match base-300 for cyberpunk theme */
-  [data-theme="cyberpunk"] .bg-background,
-  :root:has(input.theme-controller[value="cyberpunk"]:checked) .bg-background {
-    background-color: var(--color-base-300);
   }
 }

@@ -66,7 +66,7 @@ timezone_js = Script(src="/static/js/timezone.js")
 form_validation_js = Script(src="/static/js/form_validation.js")
 dashboard_js = Script(src="/static/js/dashboard.js")
 
-### Set up FastHTML app
+### Set up FastHTML app (force background colour)
 app, rt = fast_app(
     live=True,
     pico=False,
@@ -74,12 +74,12 @@ app, rt = fast_app(
         bounce_css,
         tailwind_css,
         theme_css,
-        Style("body { background-color: var(--color-base-300) !important; }"), # <-- force background color
+        Style("body { background-color: var(--color-base-200) !important; }"),
         timezone_js,
         form_validation_js,
         dashboard_js,
     ),
-    htmlkw=dict(lang="en", dir="ltr", data_theme="alt_dark"),
+    htmlkw=dict(lang="en", dir="ltr", data_theme="grey_ruby"),
 )
 
 

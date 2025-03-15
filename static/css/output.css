@@ -2007,11 +2007,14 @@
   .border-accent {
     border-color: var(--color-accent);
   }
+  .border-base-300 {
+    border-color: var(--color-base-300);
+  }
+  .bg-base-100 {
+    background-color: var(--color-base-100);
+  }
   .bg-base-200 {
     background-color: var(--color-base-200);
-  }
-  .bg-base-300 {
-    background-color: var(--color-base-300);
   }
   .p-0 {
     padding: calc(var(--spacing) * 0);
