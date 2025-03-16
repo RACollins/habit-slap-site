@@ -6,6 +6,7 @@ from components import (
     TestimonialCard,
     FAQComp,
     PricingTabs,
+    PricingCard,
 )
 from lucide_fasthtml import Lucide
 
@@ -166,6 +167,40 @@ def FAQ():
 
 
 def Pricing():
+    plans = {
+        "1 month": {
+            "price": "$10",
+            "features": [
+                "1 month of full access",
+                "1 habit goal",
+                "Daily motivation emails",
+            ],
+        },
+        "3 months": {
+            "price": "$30",
+            "features": [
+                "3 months of full access",
+                "1 habit goal",
+                "Daily motivation emails",
+            ],
+        },
+        "6 months": {
+            "price": "$60",
+            "features": [
+                "6 months of full access",
+                "1 habit goal",
+                "Daily motivation emails",
+            ],
+        },
+        "1 year": {
+            "price": "$120",
+            "features": [
+                "1 year of full access",
+                "1 habit goal",
+                "Daily motivation emails",
+            ],
+        },
+    }
     return Div(cls="container mx-auto py-16 px-4 bg-base-200")(
         H2("Pricing", cls="text-4xl font-bold text-center mb-8 text-base-content"),
         P(
@@ -173,9 +208,19 @@ def Pricing():
             cls="text-center text-base-content mb-12",
         ),
         Div(
-            cls="flex flex-col md:flex-row gap-8 justify-center items-center max-w-4xl mx-auto"
+            cls="columns-1 md:columns-2 gap-8 justify-center items-center max-w-4xl mx-auto"
         )(
-            PricingTabs()
+            PricingCard(
+                plan="1 week",
+                price="Free",
+                features=[
+                    "7 days of full access",
+                    "1 habit goal",
+                    "Daily motivation emails",
+                ],
+                button_text="Start Free Trial",
+            ),
+            PricingTabs(plans),
         ),
     )
 

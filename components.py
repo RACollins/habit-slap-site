@@ -66,52 +66,55 @@ def FAQComp(question, answer):
     )
 
 
-def PricingTabs():
-    return Div(cls="tabs tabs-border")(
-        Input(
-            type="radio",
-            name="pricing_tabs",
-            aria_label="7 days",
-            cls="tab",
-            checked="checked",
+def PricingCardBody(plan, price, features, button_text="Get Started"):
+    return Div(cls="card-body items-center text-center")(
+        H2(plan, cls="card-title text-2xl mb-2"),
+        H3(price, cls="text-secondary text-4xl font-bold mb-4"),
+        Ul(cls="space-y-3 mb-6")(
+            *[
+                Li(cls="flex items-center gap-2")(
+                    Div(
+                        "✓",
+                        data_tip="This is a tooltip",
+                        cls="tooltip tooltip-info text-success",
+                    ),
+                    Span(feature),
+                )
+                for feature in features
+            ]
         ),
-        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
-            "7 days",
-        ),
-        Input(
-            type="radio",
-            name="pricing_tabs",
-            aria_label="1 month",
-            cls="tab",
-        ),
-        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
-            "1 Month",
-        ),
-        Input(
-            type="radio",
-            name="pricing_tabs",
-            aria_label="3 months",
-            cls="tab",
-        ),
-        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
-            "3 Months",
-        ),
-        Input(
-            type="radio",
-            name="pricing_tabs",
-            aria_label="6 months",
-            cls="tab",
-        ),
-        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
-            "6 Months",
-        ),
-        Input(
-            type="radio",
-            name="pricing_tabs",
-            aria_label="1 year",
-            cls="tab",
-        ),
-        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
-            "1 Year",
-        ),
+        Div(cls="mt-auto w-full")(Button(button_text, cls="btn btn-primary w-full")),
+    )
+
+
+def PricingCard(plan, price, features, button_text="Get Started"):
+    return Div(
+        cls="card card-border bg-base-100 border-base-300 shadow-xl h-102 w-full"
+    )(PricingCardBody(plan, price, features, button_text))
+
+
+def PricingTabs(plans):
+    container_div_style = "tab-content border-base-300 bg-base-100 p-6 w-full"
+    tab_content_list = []
+    for plan, plan_dict in plans.items():
+        tab_content_list.append(
+            Input(
+                type="radio",
+                name="pricing_tabs",
+                aria_label=plan,
+                cls="tab",
+                checked="checked" if plan == "1 month" else None,
+            )
+        )
+        tab_content_list.append(
+            Div(cls=container_div_style)(
+                PricingCardBody(
+                    plan=plan,
+                    price=plan_dict["price"],
+                    features=plan_dict["features"],
+                )
+            )
+        )
+    return Div(cls="tabs tabs-lift")(
+        *tab_content_list,
     )
