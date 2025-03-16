@@ -5,7 +5,7 @@ from components import (
     HowItWorksCard,
     TestimonialCard,
     FAQComp,
-    PricingCard,
+    PricingTabs,
 )
 from lucide_fasthtml import Lucide
 
@@ -168,10 +168,14 @@ def FAQ():
 def Pricing():
     return Div(cls="container mx-auto py-16 px-4 bg-base-200")(
         H2("Pricing", cls="text-4xl font-bold text-center mb-8 text-base-content"),
-        Div(cls="flex flex-col md:flex-row gap-8 justify-center items-stretch")(
-            PricingCard("Free", "$0", ["1 goal", "Daily emails", "No commitment"]),
-            PricingCard("Premium", "$10", ["1 goal", "Daily emails", "No commitment"]),
-            PricingCard("Human", "$100", ["1 goal", "Daily emails", "No commitment"]),
+        P(
+            "No subscriptions. Free trial. Pay for the size of your habit goal.",
+            cls="text-center text-base-content mb-12",
+        ),
+        Div(
+            cls="flex flex-col md:flex-row gap-8 justify-center items-center max-w-4xl mx-auto"
+        )(
+            PricingTabs()
         ),
     )
 

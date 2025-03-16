@@ -66,27 +66,52 @@ def FAQComp(question, answer):
     )
 
 
-### Using MonsterUI Card, not DaisyUI Card
-def PricingCard(plan, price, features):
-    return Card(
-        Div(cls="p-12")(  # Added padding container
-            DivVStacked(
-                cls="space-y-1"
-            )(  # Center and vertically stack the plan name and price
-                H2(plan),
-                H3(price, cls="text-primary"),
-                P("per month"),
-            ),
-            # DivHStacked makes green check and feature Li show up on same row instead of newline
-            Ul(cls="space-y-4 my-6")(  # Added vertical margin
-                *[
-                    DivHStacked(UkIcon("check", cls="text-green-500 mr-2"), Li(feature))
-                    for feature in features
-                ],
-            ),
-            Button(
-                "Subscribe Now",
-                cls=("btn btn-primary text-primary-foreground w-full"),
-            ),
+def PricingTabs():
+    return Div(cls="tabs tabs-border")(
+        Input(
+            type="radio",
+            name="pricing_tabs",
+            aria_label="7 days",
+            cls="tab",
+            checked="checked",
+        ),
+        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
+            "7 days",
+        ),
+        Input(
+            type="radio",
+            name="pricing_tabs",
+            aria_label="1 month",
+            cls="tab",
+        ),
+        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
+            "1 Month",
+        ),
+        Input(
+            type="radio",
+            name="pricing_tabs",
+            aria_label="3 months",
+            cls="tab",
+        ),
+        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
+            "3 Months",
+        ),
+        Input(
+            type="radio",
+            name="pricing_tabs",
+            aria_label="6 months",
+            cls="tab",
+        ),
+        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
+            "6 Months",
+        ),
+        Input(
+            type="radio",
+            name="pricing_tabs",
+            aria_label="1 year",
+            cls="tab",
+        ),
+        Div(cls="tab-content border-base-300 bg-base-100 p-6")(
+            "1 Year",
         ),
     )
