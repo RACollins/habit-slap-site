@@ -2,6 +2,7 @@ from fasthtml.common import *
 import fasthtml
 import datetime
 import pytz
+import random
 
 # import monsterui.all as mui
 
@@ -17,29 +18,45 @@ steps_dict = {
     3: "Preferences",
 }
 
+# Read placeholder files
+with open("placeholder_habit_details.txt", "r") as file:
+    placeholder_habits = file.readlines()
+
+with open("placeholder_obsticals.txt", "r") as file:
+    placeholder_obstacles = file.readlines()
+
+
+def get_random_placeholders(placeholders: list[str], count: int = 1) -> str:
+    """Get random placeholder(s) from a list of strings.
+    If count > 1, returns items separated by newlines"""
+    # Clean and filter the placeholders
+    clean_placeholders = [p.strip() for p in placeholders if p.strip()]
+
+    # Select random items
+    selected = random.sample(clean_placeholders, min(count, len(clean_placeholders)))
+
+    # Join with newlines if multiple items
+    return "\n".join(selected)
+
 
 def StepProgress(step_num: int, steps_dict: dict):
     """Generate step indicator for each step in the signup process"""
     universal_cls = "w-full pt-10 pb-4"
-    match step_num:
-        case 1:
-            return mui.Steps(cls=universal_cls)(
-                mui.LiStep(steps_dict[1], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[2], cls=mui.StepT.neutral),
-                mui.LiStep(steps_dict[3], cls=mui.StepT.neutral),
-            )
-        case 2:
-            return mui.Steps(cls=universal_cls)(
-                mui.LiStep(steps_dict[1], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[2], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[3], cls=mui.StepT.neutral),
-            )
-        case 3:
-            return mui.Steps(cls=universal_cls)(
-                mui.LiStep(steps_dict[1], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[2], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[3], cls=mui.StepT.primary),
-            )
+
+    # Create base steps element
+    steps = Ul(cls=f"steps {universal_cls}")
+
+    # Helper function to determine step class
+    def get_step_class(step_index):
+        if step_index <= step_num:
+            return "step-primary"
+        return ""
+
+    # Add all steps
+    for i in range(1, 4):
+        steps(Li(steps_dict[i], cls=f"step {get_step_class(i)}"))
+
+    return steps
 
 
 def StepContent(step_num: int, steps_dict: dict, session=None):
@@ -49,7 +66,7 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
             # Get email from session if available
             email = session.get("auth", "") if session else ""
 
-            return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
+            return Fieldset(cls="fieldset bg-base-100 p-4 rounded-box")(
                 Legend(steps_dict[1], cls="fieldset-legend"),
                 # Add email as a hidden field instead of visible input
                 Hidden(value=email, name="email") if email else None,
@@ -76,11 +93,14 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                 Div(cls="text-error text-sm hidden", id="bio-error")("Bio is required"),
             )
         case 2:
-            return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
+            return Fieldset(cls="fieldset bg-base-100 p-4 rounded-box")(
                 Legend(steps_dict[2], cls="fieldset-legend"),
-                Label("What do you want to achieve?", cls="fieldset-label"),
+                Div(
+                    cls="tooltip tooltip-info",
+                    data_tip="Be honest, realistic, and precise.",
+                )(Label("What do you want to achieve?", cls="fieldset-label")),
                 Textarea(cls="textarea textarea-bordered w-full h-32")(
-                    placeholder="Be honest, realistic, and precise.",
+                    placeholder=get_random_placeholders(placeholder_habits),
                     id="habit_details",
                     name="habit_details",
                     required=True,
@@ -88,7 +108,16 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                 Div(cls="text-error text-sm hidden", id="habit_details-error")(
                     "This field is required"
                 ),
-                Label("Time Frame", cls="fieldset-label"),
+                Div(
+                    cls="tooltip tooltip-info",
+                    data_tip="Be honest about what might stop you from forming this habit.",
+                )(Label("Potential Obstacles", cls="fieldset-label")),
+                Textarea(cls="textarea textarea-bordered w-full h-32")(
+                    placeholder=get_random_placeholders(placeholder_obstacles, 3),
+                    id="obstacles",
+                    name="obstacles",
+                    required=True,
+                ),
                 Select(
                     Option("--", disabled=True, selected=True, value=""),
                     Option("1 week", value="1 week"),
@@ -104,14 +133,11 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     required=True,
                 ),
                 Div(cls="text-error text-sm hidden", id="timeframe-error")(
-                    "Please select a time frame"
-                ),
-                P(cls="text-sm opacity-70 mt-1")(
-                    "How long are you committing to establishing this habit?",
+                    "Nothing's going to stop you?! Great! Put that."
                 ),
             )
         case 3:
-            return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
+            return Fieldset(cls="fieldset bg-base-100 p-4 rounded-box")(
                 Legend(steps_dict[3], cls="fieldset-legend"),
                 Label("Delivery Time", cls="fieldset-label mt-4"),
                 Input(
@@ -237,17 +263,22 @@ def SignUpForm(step_num: int, form_data=None, session=None):
 
 def SignUpPage(step_num=1, form_data=None, session=None):
     """Complete signup page with progress indicator and form"""
-    # Create container with fixed progress at top and scrollable form below
-    return Div(cls="container mx-auto max-w-md")(
-        # Fixed progress indicator at the top
-        Div(cls="sticky top-0 bg-background z-10 shadow-sm", id="progress-indicator")(
-            StepProgress(step_num, steps_dict),
-        ),
-        # Form container with padding
-        Div(cls="p-4", id="signup-container")(
-            # Container for form content that will be updated by HTMX
-            Div(id="form-content")(
-                SignUpForm(step_num, form_data, session),
+    # Create container using hero component for full-height background
+    return Div(cls="hero min-h-screen bg-base-200")(
+        Div(cls="hero-content flex-col w-full max-w-md p-0")(
+            # Fixed progress indicator at the top
+            Div(
+                cls="w-full sticky top-0 bg-base-200 z-10 shadow-sm",
+                id="progress-indicator",
+            )(
+                StepProgress(step_num, steps_dict),
+            ),
+            # Form container
+            Div(cls="w-full", id="signup-container")(
+                # Container for form content that will be updated by HTMX
+                Div(id="form-content")(
+                    SignUpForm(step_num, form_data, session),
+                ),
             ),
         ),
     )
@@ -263,7 +294,9 @@ def get(session=None):
     if not session or "auth" not in session:
         return RedirectResponse("/login")
 
-    return Title("Sign Up"), SignUpPage(step_num=1, form_data=form_data, session=session)
+    return Title("Sign Up"), SignUpPage(
+        step_num=1, form_data=form_data, session=session
+    )
 
 
 # Process form submission for each step
@@ -403,7 +436,7 @@ def render_step(step: int, session):
 def success():
     """Display success message after completing signup"""
     return Div(cls="container mx-auto max-w-md p-4")(
-        Div(cls="text-center p-8 bg-card rounded-box shadow-lg")(
+        Div(cls="text-center p-8 bg-base-100 rounded-box shadow-lg")(
             H2("Thank You for Signing Up!", cls="text-2xl font-bold"),
             P(cls="my-4")("Your account has been created successfully."),
             P(cls="mb-4")(

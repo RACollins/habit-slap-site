@@ -66,7 +66,7 @@ def PricingCardBody(plan, price, features, button_text):
                     Div(
                         "✓",
                         data_tip="This is a tooltip",
-                        cls="tooltip tooltip-info text-success",
+                        cls="tooltip tooltip-info",
                     ),
                     Span(feature),
                 )

@@ -380,7 +380,7 @@ def MainContent(user, session):
                     aria_label="Toggle sidebar",
                 )(Lucide("chevron-right")),
             ),
-            Div(cls="flex-1 px-2 mx-2 text-4xl text-center font-bold")(H1("Dashboard")),
+            Div(cls="flex-1 p-4 mx-2 text-4xl text-center font-bold")(H1("Dashboard")),
         ),
         Div(cls="p-4 flex-grow")(
             # Content sections - only one will be visible at a time
