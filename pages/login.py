@@ -25,7 +25,7 @@ def MagicLinkForm(btn_text: str, target: str):
     return Div(cls="hero bg-background min-h-screen")(
         Div(cls="hero-content text-center")(
             Div(cls="max-w-md")(
-                H1("No Passwords. No Excuses.", cls="text-4xl font-bold"),
+                H1("No Passwords. No Excuses.", cls="text-3xl font-bold"),
                 P(cls="flex items-center justify-center gap-2 py-3")(
                     "Just enter your @ and click on the link."
                 ),
@@ -36,7 +36,7 @@ def MagicLinkForm(btn_text: str, target: str):
                             name="email",
                             required=True,
                             placeholder=placeholder_email,
-                            cls="input input-bordered w-full join-item validator placeholder-accent",
+                            cls="input input-bordered bg-base-100 w-full join-item validator placeholder-slate-500",
                         ),
                         Div("Enter valid email address", cls="validator-hint hidden"),
                     ),

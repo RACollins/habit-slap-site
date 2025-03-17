@@ -175,6 +175,7 @@ def Pricing():
                 "1 habit goal",
                 "Daily motivation emails",
             ],
+            "button_text": "Buy Now",
         },
         "3 months": {
             "price": "$30",
@@ -183,6 +184,7 @@ def Pricing():
                 "1 habit goal",
                 "Daily motivation emails",
             ],
+            "button_text": "Buy Now",
         },
         "6 months": {
             "price": "$60",
@@ -191,6 +193,7 @@ def Pricing():
                 "1 habit goal",
                 "Daily motivation emails",
             ],
+            "button_text": "Buy Now",
         },
         "1 year": {
             "price": "$120",
@@ -199,6 +202,7 @@ def Pricing():
                 "1 habit goal",
                 "Daily motivation emails",
             ],
+            "button_text": "Buy Now",
         },
     }
     return Div(cls="container mx-auto py-16 px-4 bg-base-200")(

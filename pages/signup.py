@@ -3,7 +3,7 @@ import fasthtml
 import datetime
 import pytz
 
-import monsterui.all as mui
+# import monsterui.all as mui
 
 from database.dynamo_handler import DynamoHandler
 from utils import convert_local_to_utc

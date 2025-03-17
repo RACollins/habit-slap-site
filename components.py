@@ -1,5 +1,4 @@
 from fasthtml.common import *
-from monsterui.all import *
 
 
 def DaisyTopBar():
@@ -10,15 +9,6 @@ def DaisyTopBar():
         Div(cls="flex-none")(
             Ul(cls="menu menu-horizontal px-1")(
                 Li(A("Login", href="/login")),
-                Li(
-                    Details(
-                        Summary("Parent"),
-                        Ul(cls="bg-base-200 rounded-t-none p-2")(
-                            Li(A("Link 1")),
-                            Li(A("Link 2")),
-                        ),
-                    )
-                ),
             ),
         ),
     )
@@ -66,7 +56,7 @@ def FAQComp(question, answer):
     )
 
 
-def PricingCardBody(plan, price, features, button_text="Get Started"):
+def PricingCardBody(plan, price, features, button_text):
     return Div(cls="card-body items-center text-center")(
         H2(plan, cls="card-title text-2xl mb-2"),
         H3(price, cls="text-secondary text-4xl font-bold mb-4"),
@@ -87,7 +77,7 @@ def PricingCardBody(plan, price, features, button_text="Get Started"):
     )
 
 
-def PricingCard(plan, price, features, button_text="Get Started"):
+def PricingCard(plan, price, features, button_text):
     return Div(
         cls="card card-border bg-base-100 border-base-300 shadow-xl h-102 w-full"
     )(PricingCardBody(plan, price, features, button_text))
@@ -112,6 +102,7 @@ def PricingTabs(plans):
                     plan=plan,
                     price=plan_dict["price"],
                     features=plan_dict["features"],
+                    button_text=plan_dict["button_text"],
                 )
             )
         )
