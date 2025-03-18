@@ -12,13 +12,13 @@ from datetime import datetime, timedelta, timezone
 load_dotenv()
 db = DynamoHandler()
 site_url = os.getenv("SITE_URL")
-
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ar = fasthtml.APIRouter()
 
 
 def MagicLinkForm(btn_text: str, target: str):
 
-    with open("placeholder_emails.txt", "r") as file:
+    with open(os.path.join(root_dir, "placeholders/emails.txt"), "r") as file:
         placeholder_emails = file.readlines()
     placeholder_email = random.choice(placeholder_emails).strip()
 

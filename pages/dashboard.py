@@ -16,7 +16,7 @@ db = DynamoHandler()
 def SidebarContent():
     return Div(cls="h-full")(
         Div(cls="text-xl font-bold p-4 border-b")("Habit Slap"),
-        Ul(cls="menu p-4 w-80 min-h-full bg-card text-card-foreground")(
+        Ul(cls="menu p-4 w-80 min-h-full bg-base-200 border border-base-300 text-base-content")(
             Li()(
                 A(
                     cls="sidebar-link",
@@ -60,7 +60,7 @@ def SidebarContent():
             ),
             Li()(
                 # Collapse component for delete account
-                Div(cls="collapse bg-card")(
+                Div(cls="collapse bg-base-200")(
                     Input(type="checkbox", cls="peer"),
                     Div(
                         cls="collapse-title p-0",  # Remove default padding
@@ -135,7 +135,7 @@ def PreferencesContent(user, session):
     intensity = user.get("intensity", "50")
 
     return Div(cls="hero-content")(
-        Div(cls="card w-full bg-card text-card-foreground shadow-xl")(
+        Div(cls="card w-full bg-base-100 text-card-foreground shadow-xl")(
             Div(cls="card-body")(
                 Form(
                     action="/dashboard/update",
@@ -234,7 +234,7 @@ def PersonalContent(user):
     bio = user.get("bio", "")
 
     return Div(cls="hero-content")(
-        Div(cls="card w-full bg-card shadow-xl")(
+        Div(cls="card w-full bg-base-200")(
             Div(cls="card-body")(
                 Form(
                     action="/dashboard/update",
@@ -242,7 +242,7 @@ def PersonalContent(user):
                     id="personal-form",
                 )(
                     Fieldset(
-                        cls="fieldset bg-background border border-accent p-4 rounded-box"
+                        cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
                     )(
                         Legend("Personal Information", cls="fieldset-legend"),
                         # Name
@@ -286,7 +286,7 @@ def HabitContent(user):
     timeframe = user.get("timeframe", "")
 
     return Div(cls="hero-content")(
-        Div(cls="card w-full bg-card shadow-xl")(
+        Div(cls="card w-full bg-base-100 shadow-xl")(
             Div(cls="card-body")(
                 Form(
                     action="/dashboard/update",
@@ -294,7 +294,7 @@ def HabitContent(user):
                     id="habit-form",
                 )(
                     Fieldset(
-                        cls="fieldset bg-background border border-accent p-4 rounded-box"
+                        cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
                     )(
                         Legend("Habit Information", cls="fieldset-legend"),
                         # Habit Details

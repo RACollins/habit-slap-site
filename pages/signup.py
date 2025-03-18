@@ -4,8 +4,6 @@ import datetime
 import pytz
 import random
 
-# import monsterui.all as mui
-
 from database.dynamo_handler import DynamoHandler
 from utils import convert_local_to_utc
 
@@ -17,13 +15,17 @@ steps_dict = {
     2: "Habit",
     3: "Preferences",
 }
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Read placeholder files
-with open("placeholder_habit_details.txt", "r") as file:
+
+with open(os.path.join(root_dir, "placeholders/habit_details.txt"), "r") as file:
     placeholder_habits = file.readlines()
 
-with open("placeholder_obsticals.txt", "r") as file:
+with open(os.path.join(root_dir, "placeholders/obstacles.txt"), "r") as file:
     placeholder_obstacles = file.readlines()
+
+with open(os.path.join(root_dir, "placeholders/action_plans.txt"), "r") as file:
+    placeholder_action_plan = file.readlines()
 
 
 def get_random_placeholders(placeholders: list[str], count: int = 1) -> str:
@@ -66,7 +68,9 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
             # Get email from session if available
             email = session.get("auth", "") if session else ""
 
-            return Fieldset(cls="fieldset bg-base-100 p-4 rounded-box")(
+            return Fieldset(
+                cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
+            )(
                 Legend(steps_dict[1], cls="fieldset-legend"),
                 # Add email as a hidden field instead of visible input
                 Hidden(value=email, name="email") if email else None,
@@ -93,114 +97,63 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                 Div(cls="text-error text-sm hidden", id="bio-error")("Bio is required"),
             )
         case 2:
-            return Fieldset(cls="fieldset bg-base-100 p-4 rounded-box")(
+            textarea_cls = "textarea textarea-bordered w-full h-32 mb-4"
+            error_cls = "text-error text-sm hidden"
+            return Fieldset(
+                cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
+            )(
                 Legend(steps_dict[2], cls="fieldset-legend"),
                 Div(
                     cls="tooltip tooltip-info",
-                    data_tip="Be honest, realistic, and precise.",
-                )(Label("What do you want to achieve?", cls="fieldset-label")),
-                Textarea(cls="textarea textarea-bordered w-full h-32")(
+                    data_tip="What do you want to achieve? Be honest, realistic, and precise.",
+                )(Label("Details", cls="fieldset-label")),
+                Textarea(cls=textarea_cls)(
                     placeholder=get_random_placeholders(placeholder_habits),
                     id="habit_details",
                     name="habit_details",
                     required=True,
                 ),
-                Div(cls="text-error text-sm hidden", id="habit_details-error")(
-                    "This field is required"
-                ),
+                Div(cls=error_cls, id="habit_details-error")("This field is required"),
                 Div(
                     cls="tooltip tooltip-info",
-                    data_tip="Be honest about what might stop you from forming this habit.",
+                    data_tip="How are you actually going to achieve this?",
+                )(Label("Action Plan", cls="fieldset-label")),
+                Textarea(cls=textarea_cls)(
+                    placeholder=get_random_placeholders(placeholder_action_plan, 1),
+                    id="action_plan",
+                    name="action_plan",
+                    required=True,
+                ),
+                Div(cls=error_cls, id="action_plan-error")("Action Plan is required"),
+                Div(
+                    cls="tooltip tooltip-info",
+                    data_tip="What might stop you from forming this habit?",
                 )(Label("Potential Obstacles", cls="fieldset-label")),
-                Textarea(cls="textarea textarea-bordered w-full h-32")(
+                Textarea(cls=textarea_cls)(
                     placeholder=get_random_placeholders(placeholder_obstacles, 3),
                     id="obstacles",
                     name="obstacles",
                     required=True,
                 ),
-                Select(
-                    Option("--", disabled=True, selected=True, value=""),
-                    Option("1 week", value="1 week"),
-                    Option("1 month", value="1 month"),
-                    Option("3 months", value="3 months"),
-                    Option("6 months", value="6 months"),
-                    Option("1 year", value="1 year"),
-                    Option("3 years", value="3 years"),
-                    Option("5 years", value="5 years"),
-                    cls="select select-bordered w-full",
-                    id="timeframe",
-                    name="timeframe",
-                    required=True,
-                ),
-                Div(cls="text-error text-sm hidden", id="timeframe-error")(
+                Div(cls=error_cls, id="obstacles-error")(
                     "Nothing's going to stop you?! Great! Put that."
                 ),
             )
         case 3:
-            return Fieldset(cls="fieldset bg-base-100 p-4 rounded-box")(
+            return Fieldset(
+                cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
+            )(
                 Legend(steps_dict[3], cls="fieldset-legend"),
-                Label("Delivery Time", cls="fieldset-label mt-4"),
+                Div(
+                    cls="tooltip tooltip-info",
+                    data_tip="When would you like to receive your daily motivation?",
+                )(Label("Delivery Time", cls="fieldset-label mt-4")),
                 Input(
                     type="time",
                     id="delivery_time",
                     name="delivery_time",
                     value="09:00",
                     cls="input input-bordered w-full",
-                ),
-                P(cls="text-sm opacity-70 mt-1")(
-                    "When would you like to receive your daily motivation?",
-                ),
-                Label("Email Style", cls="fieldset-label mt-4"),
-                # Formality Slider
-                Label("Formality", cls="label mt-4"),
-                Div(cls="w-full")(
-                    Input(
-                        type="range",
-                        min="0",
-                        max="100",
-                        value="50",
-                        cls="range range-primary",
-                        id="formality",
-                        name="formality",
-                    ),
-                    Div(cls="flex justify-between px-2 text-xs")(
-                        Span("Casual & Friendly"), Span("Formal & Professional")
-                    ),
-                ),
-                # Assertiveness Slider
-                Label("Assertiveness", cls="label mt-4"),
-                Div(cls="w-full")(
-                    Input(
-                        type="range",
-                        min="0",
-                        max="100",
-                        value="50",
-                        cls="range range-secondary",
-                        id="assertiveness",
-                        name="assertiveness",
-                    ),
-                    Div(cls="flex justify-between px-2 text-xs")(
-                        Span("Gentle & Supportive"), Span("Direct & Challenging")
-                    ),
-                ),
-                # Intensity Slider
-                Label("Emotional Intensity", cls="label mt-4"),
-                Div(cls="w-full")(
-                    Input(
-                        type="range",
-                        min="0",
-                        max="100",
-                        value="50",
-                        cls="range range-accent",
-                        id="intensity",
-                        name="intensity",
-                    ),
-                    Div(cls="flex justify-between px-2 text-xs")(
-                        Span("Calm & Measured"), Span("Passionate & Energetic")
-                    ),
-                ),
-                P(cls="text-sm opacity-70 mt-4")(
-                    "Adjust these sliders to customize the tone and style of your motivational emails.",
                 ),
             )
 
@@ -264,11 +217,11 @@ def SignUpForm(step_num: int, form_data=None, session=None):
 def SignUpPage(step_num=1, form_data=None, session=None):
     """Complete signup page with progress indicator and form"""
     # Create container using hero component for full-height background
-    return Div(cls="hero min-h-screen bg-base-200")(
+    return Title("Sign Up"), Div(cls="hero min-h-screen bg-base-200")(
         Div(cls="hero-content flex-col w-full max-w-md p-0")(
             # Fixed progress indicator at the top
             Div(
-                cls="w-full sticky top-0 bg-base-200 z-10 shadow-sm",
+                cls="w-full sticky top-0 bg-base-200 z-10",
                 id="progress-indicator",
             )(
                 StepProgress(step_num, steps_dict),
@@ -316,11 +269,9 @@ async def process_step(request, step: int, session):
             "name",
             "bio",
             "habit_details",
-            "timeframe",
+            "action_plan",
+            "obstacles",
             "delivery_time",
-            "formality",
-            "assertiveness",
-            "intensity",
         ]
     }
 
