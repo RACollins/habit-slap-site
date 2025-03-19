@@ -1,0 +1,69 @@
+@layer base {
+  :root:has(input.theme-controller[value="alt_dark"]:checked),
+  [data-theme="alt_dark"] {
+    color-scheme: dark;
+    --color-base-100: oklch(37% 0.034 259.733);
+    --color-base-200: oklch(21% 0.034 264.665);
+    --color-base-300: oklch(13% 0.028 261.692);
+    --color-base-content: oklch(92% 0.006 264.531);
+    --color-primary: oklch(58% 0.233 277.117);
+    --color-primary-content: oklch(96% 0.018 272.314);
+    --color-secondary: oklch(65% 0.241 354.308);
+    --color-secondary-content: oklch(94% 0.028 342.258);
+    --color-accent: oklch(77% 0.152 181.912);
+    --color-accent-content: oklch(38% 0.063 188.416);
+    --color-neutral: oklch(14% 0.005 285.823);
+    --color-neutral-content: oklch(92% 0.004 286.32);
+    --color-info: oklch(74% 0.16 232.661);
+    --color-info-content: oklch(29% 0.066 243.157);
+    --color-success: oklch(76% 0.177 163.223);
+    --color-success-content: oklch(37% 0.077 168.94);
+    --color-warning: oklch(82% 0.189 84.429);
+    --color-warning-content: oklch(41% 0.112 45.904);
+    --color-error: oklch(71% 0.194 13.428);
+    --color-error-content: oklch(27% 0.105 12.094);
+    --radius-selector: 1rem;
+    --radius-field: 1rem;
+    --radius-box: 1rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 1;
+    --noise: 0;
+  }
+}
+
+@layer base {
+  :root:has(input.theme-controller[value="grey_ruby"]:checked),
+  [data-theme="grey_ruby"] {
+    color-scheme: dark;
+    --color-base-100: oklch(37% 0.044 257.287);
+    --color-base-200: oklch(27% 0.041 260.031);
+    --color-base-300: oklch(12% 0.042 264.695);
+    --color-base-content: oklch(98% 0.003 247.858);
+    --color-primary: oklch(51% 0.222 16.935);
+    --color-primary-content: oklch(96% 0.015 12.422);
+    --color-secondary: oklch(81% 0.117 11.638);
+    --color-secondary-content: oklch(41% 0.159 10.272);
+    --color-accent: oklch(52% 0.223 3.958);
+    --color-accent-content: oklch(97% 0.014 343.198);
+    --color-neutral: oklch(20% 0 0);
+    --color-neutral-content: oklch(98% 0 0);
+    --color-info: oklch(58% 0.158 241.966);
+    --color-info-content: oklch(97% 0.013 236.62);
+    --color-success: oklch(62% 0.194 149.214);
+    --color-success-content: oklch(98% 0.018 155.826);
+    --color-warning: oklch(68% 0.162 75.834);
+    --color-warning-content: oklch(98% 0.026 102.212);
+    --color-error: oklch(57% 0.245 27.325);
+    --color-error-content: oklch(97% 0.013 17.38);
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.5rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+  }
+}
