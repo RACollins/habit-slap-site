@@ -2,7 +2,6 @@ from fasthtml.common import *
 import fasthtml
 import pytz
 
-# from monsterui.all import *
 from lucide_fasthtml import Lucide
 from database.dynamo_handler import DynamoHandler
 import datetime
@@ -14,10 +13,14 @@ ar = fasthtml.APIRouter()
 db = DynamoHandler()
 
 
-def SidebarContent():
+def SidebarContent(email):
     return Div(cls="h-full")(
-        Div(cls="text-xl font-bold p-4 border-b")("Habit Slap"),
-        Ul(cls="menu p-4 w-80 min-h-full bg-card text-card-foreground")(
+        Div(
+            cls="text-xl font-bold p-4 border border-r-base-300 border-l-base-300 border-t-base-300 bg-base-100"
+        )("Habit Slap"),
+        Ul(
+            cls="menu p-4 w-80 min-h-full bg-base-100 border border-base-300 text-base-content"
+        )(
             Li()(
                 A(
                     cls="sidebar-link",
@@ -48,6 +51,15 @@ def SidebarContent():
                 )
             ),
             Div(cls="divider my-2"),
+            Div(
+                cls="text-sm mb-4 px-4",
+                id="signed-in-as",
+            )(
+                P("Signed in as"),
+                P(cls="text-secondary")(
+                    f"{email}" if email else "Email not found in session",
+                ),
+            ),
             Li()(
                 A(
                     href="/signout",
@@ -61,7 +73,7 @@ def SidebarContent():
             ),
             Li()(
                 # Collapse component for delete account
-                Div(cls="collapse bg-card")(
+                Div(cls="collapse bg-base-100")(
                     Input(type="checkbox", cls="peer"),
                     Div(
                         cls="collapse-title p-0",  # Remove default padding
@@ -111,6 +123,114 @@ def SidebarContent():
     )
 
 
+def PersonalContent(user):
+    """Generate the personal section content"""
+    # Get user data with default values if not set
+    name = user.get("name", "")
+    bio = user.get("bio", "")
+
+    # Common styles
+    textarea_cls = "textarea textarea-bordered w-full h-32 mb-4"
+
+    return Div(cls="hero-content")(
+        Div(cls="card w-full bg-base-200")(
+            Div(cls="card-body")(
+                Form(
+                    action="/dashboard/update",
+                    method="post",
+                    id="personal-form",
+                )(
+                    Fieldset(
+                        cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
+                    )(
+                        Legend("Personal Information", cls="fieldset-legend"),
+                        Label("Name", cls="fieldset-label"),
+                        Input(
+                            type="text",
+                            id="name",
+                            name="name",
+                            value=name,
+                            cls="input input-bordered w-full mb-4",
+                        ),
+                        Label("Bio", cls="fieldset-label"),
+                        Textarea(
+                            bio,
+                            id="bio",
+                            name="bio",
+                            cls=textarea_cls,
+                        ),
+                        Div(cls="mt-6 text-right")(
+                            Button(
+                                "Save Changes",
+                                type="submit",
+                                cls="btn btn-primary",
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
+def HabitContent(user):
+    """Generate the habit section content"""
+    # Get user data with default values if not set
+    habit_details = user.get("habit_details", "")
+    action_plan = user.get("action_plan", "")
+    obstacles = user.get("obstacles", "")
+
+    # Common styles
+    textarea_cls = "textarea textarea-bordered w-full h-32 mb-4"
+
+    return Div(cls="hero-content")(
+        Div(cls="card w-full bg-base-200")(
+            Div(cls="card-body")(
+                Form(
+                    action="/dashboard/update",
+                    method="post",
+                    id="habit-form",
+                )(
+                    Fieldset(
+                        cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
+                    )(
+                        Legend("Habit Information", cls="fieldset-legend"),
+                        Label("Details", cls="fieldset-label"),
+                        Textarea(
+                            habit_details,
+                            id="habit_details",
+                            name="habit_details",
+                            cls=textarea_cls,
+                        ),
+                        Label("Action Plan", cls="fieldset-label"),
+                        Textarea(
+                            action_plan,
+                            id="action_plan",
+                            name="action_plan",
+                            cls=textarea_cls,
+                        ),
+                        Label("Potential Obstacles", cls="fieldset-label"),
+                        Textarea(
+                            obstacles,
+                            id="obstacles",
+                            name="obstacles",
+                            cls=textarea_cls,
+                        ),
+                        # Save Button
+                        Div(cls="mt-6 text-right")(
+                            Button(
+                                "Save Changes",
+                                type="submit",
+                                cls="btn btn-primary",
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    )
+
+
 def PreferencesContent(user, session):
     """Generate the preferences section content"""
     # Get user preferences with default values if not set
@@ -131,12 +251,8 @@ def PreferencesContent(user, session):
     # Format time in 24-hour format
     delivery_time = local_time.strftime("%H:%M")
 
-    formality = user.get("formality", "50")
-    assertiveness = user.get("assertiveness", "50")
-    intensity = user.get("intensity", "50")
-
     return Div(cls="hero-content")(
-        Div(cls="card w-full bg-card text-card-foreground shadow-xl")(
+        Div(cls="card w-full bg-base-200")(
             Div(cls="card-body")(
                 Form(
                     action="/dashboard/update",
@@ -144,10 +260,9 @@ def PreferencesContent(user, session):
                     id="preferences-form",
                 )(
                     Fieldset(
-                        cls="fieldset bg-background border border-accent p-4 rounded-box"
+                        cls="fieldset bg-base-100 border border-base-300 p-4 rounded-box"
                     )(
                         Legend("Email Preferences", cls="fieldset-legend"),
-                        # Delivery Time
                         Label("Delivery Time", cls="fieldset-label"),
                         Input(
                             type="time",
@@ -155,205 +270,6 @@ def PreferencesContent(user, session):
                             name="delivery_time",
                             value=delivery_time,
                             cls="input input-bordered w-full",
-                        ),
-                        P(cls="text-sm opacity-70 mb-4")(
-                            "When would you like to receive your daily motivation?",
-                        ),
-                        # Email Style
-                        Label("Email Style", cls="fieldset-label mt-4"),
-                        # Formality Slider
-                        Label("Formality", cls="fieldset-label"),
-                        Div(cls="w-full")(
-                            Input(
-                                type="range",
-                                min="0",
-                                max="100",
-                                value=formality,
-                                cls="range range-primary",
-                                id="formality",
-                                name="formality",
-                            ),
-                            Div(cls="flex justify-between px-2 text-xs mb-4")(
-                                Span("Casual & Friendly"), Span("Formal & Professional")
-                            ),
-                        ),
-                        # Assertiveness Slider
-                        Label("Assertiveness", cls="fieldset-label"),
-                        Div(cls="w-full")(
-                            Input(
-                                type="range",
-                                min="0",
-                                max="100",
-                                value=assertiveness,
-                                cls="range range-secondary",
-                                id="assertiveness",
-                                name="assertiveness",
-                            ),
-                            Div(cls="flex justify-between px-2 text-xs mb-4")(
-                                Span("Gentle & Supportive"),
-                                Span("Direct & Challenging"),
-                            ),
-                        ),
-                        # Intensity Slider
-                        Label("Emotional Intensity", cls="fieldset-label"),
-                        Div(cls="w-full")(
-                            Input(
-                                type="range",
-                                min="0",
-                                max="100",
-                                value=intensity,
-                                cls="range range-accent",
-                                id="intensity",
-                                name="intensity",
-                            ),
-                            Div(cls="flex justify-between px-2 text-xs")(
-                                Span("Calm & Measured"), Span("Passionate & Energetic")
-                            ),
-                        ),
-                        P(cls="text-sm opacity-70 mt-1")(
-                            "Adjust these sliders to customize the tone and style of your motivational emails.",
-                        ),
-                        # Save Button
-                        Div(cls="mt-6 text-right")(
-                            Button(
-                                "Save Changes",
-                                type="submit",
-                                cls="btn btn-primary",
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        ),
-    )
-
-
-def PersonalContent(user):
-    """Generate the personal section content"""
-    # Get user data with default values if not set
-    name = user.get("name", "")
-    bio = user.get("bio", "")
-
-    return Div(cls="hero-content")(
-        Div(cls="card w-full bg-card shadow-xl")(
-            Div(cls="card-body")(
-                Form(
-                    action="/dashboard/update",
-                    method="post",
-                    id="personal-form",
-                )(
-                    Fieldset(
-                        cls="fieldset bg-background border border-accent p-4 rounded-box"
-                    )(
-                        Legend("Personal Information", cls="fieldset-legend"),
-                        # Name
-                        Label("Name", cls="fieldset-label"),
-                        Input(
-                            type="text",
-                            id="name",
-                            name="name",
-                            value=name,
-                            cls="input input-bordered w-full",
-                            placeholder="John Doe",
-                        ),
-                        # Bio
-                        Label("Bio", cls="fieldset-label mt-4"),
-                        Textarea(
-                            bio,
-                            id="bio",
-                            name="bio",
-                            cls="textarea textarea-bordered w-full h-24",
-                            placeholder="Tell us a little bit about yourself",
-                        ),
-                        # Save Button
-                        Div(cls="mt-6 text-right")(
-                            Button(
-                                "Save Changes",
-                                type="submit",
-                                cls="btn btn-primary",
-                            ),
-                        ),
-                    ),
-                ),
-            ),
-        ),
-    )
-
-
-def HabitContent(user):
-    """Generate the habit section content"""
-    # Get user data with default values if not set
-    habit_details = user.get("habit_details", "")
-    timeframe = user.get("timeframe", "")
-
-    return Div(cls="hero-content")(
-        Div(cls="card w-full bg-card shadow-xl")(
-            Div(cls="card-body")(
-                Form(
-                    action="/dashboard/update",
-                    method="post",
-                    id="habit-form",
-                )(
-                    Fieldset(
-                        cls="fieldset bg-background border border-accent p-4 rounded-box"
-                    )(
-                        Legend("Habit Information", cls="fieldset-legend"),
-                        # Habit Details
-                        Label("What do you want to achieve?", cls="fieldset-label"),
-                        Textarea(
-                            habit_details,
-                            id="habit_details",
-                            name="habit_details",
-                            cls="textarea textarea-bordered w-full h-32",
-                            placeholder="Be honest, realistic, and precise.",
-                        ),
-                        # Time Frame
-                        Label("Time Frame", cls="fieldset-label mt-4"),
-                        Select(
-                            Option(
-                                "--", disabled=True, selected=(not timeframe), value=""
-                            ),
-                            Option(
-                                "1 week",
-                                value="1 week",
-                                selected=(timeframe == "1 week"),
-                            ),
-                            Option(
-                                "1 month",
-                                value="1 month",
-                                selected=(timeframe == "1 month"),
-                            ),
-                            Option(
-                                "3 months",
-                                value="3 months",
-                                selected=(timeframe == "3 months"),
-                            ),
-                            Option(
-                                "6 months",
-                                value="6 months",
-                                selected=(timeframe == "6 months"),
-                            ),
-                            Option(
-                                "1 year",
-                                value="1 year",
-                                selected=(timeframe == "1 year"),
-                            ),
-                            Option(
-                                "3 years",
-                                value="3 years",
-                                selected=(timeframe == "3 years"),
-                            ),
-                            Option(
-                                "5 years",
-                                value="5 years",
-                                selected=(timeframe == "5 years"),
-                            ),
-                            cls="select select-bordered w-full",
-                            id="timeframe",
-                            name="timeframe",
-                        ),
-                        P(cls="text-sm opacity-70 mt-1")(
-                            "How long are you committing to establishing this habit?",
                         ),
                         # Save Button
                         Div(cls="mt-6 text-right")(
@@ -381,7 +297,7 @@ def MainContent(user, session):
                     aria_label="Toggle sidebar",
                 )(Lucide("chevron-right")),
             ),
-            Div(cls="flex-1 px-2 mx-2 text-4xl text-center font-bold")(H1("Dashboard")),
+            Div(cls="flex-1 p-4 mx-2 text-4xl text-center font-bold")(H1("Dashboard")),
         ),
         Div(cls="p-4 flex-grow")(
             # Content sections - only one will be visible at a time
@@ -402,6 +318,8 @@ def MainContent(user, session):
 
 
 def DashboardPage(user, session):
+    # Get email from session if available
+    email = session.get("auth", "") if session else ""
     return Div(cls="drawer lg:drawer-open")(
         Input(id="dashboard-drawer", type="checkbox", cls="drawer-toggle"),
         MainContent(user, session),
@@ -409,7 +327,7 @@ def DashboardPage(user, session):
             Label(
                 cls="drawer-overlay", fr="dashboard-drawer", aria_label="close sidebar"
             ),
-            SidebarContent(),
+            SidebarContent(email),
         ),
     )
 
@@ -440,14 +358,12 @@ async def update_dashboard(request, session):
             for key, value in form_data.items()
             if key
             in [
-                "delivery_time",
-                "habit_details",
-                "timeframe",
                 "name",
                 "bio",
-                "formality",
-                "assertiveness",
-                "intensity",
+                "habit_details",
+                "action_plan",
+                "obstacles",
+                "delivery_time",
             ]
         }
 

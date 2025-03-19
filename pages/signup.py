@@ -2,9 +2,7 @@ from fasthtml.common import *
 import fasthtml
 import datetime
 import pytz
-
-# from monsterui.all import *
-import monsterui.all as mui
+import random
 
 from database.dynamo_handler import DynamoHandler
 from utils import convert_local_to_utc
@@ -17,48 +15,85 @@ steps_dict = {
     2: "Habit",
     3: "Preferences",
 }
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+with open(os.path.join(root_dir, "placeholders/habit_details.txt"), "r") as file:
+    placeholder_habits = file.readlines()
+
+with open(os.path.join(root_dir, "placeholders/obstacles.txt"), "r") as file:
+    placeholder_obstacles = file.readlines()
+
+with open(os.path.join(root_dir, "placeholders/action_plans.txt"), "r") as file:
+    placeholder_action_plan = file.readlines()
+
+with open(os.path.join(root_dir, "placeholders/bios.txt"), "r") as file:
+    placeholder_bio = file.readlines()
+
+
+def get_random_placeholders(placeholders: list[str], count: int = 1) -> str:
+    """Get random placeholder(s) from a list of strings.
+    If count > 1, returns items separated by newlines"""
+    # Clean and filter the placeholders
+    clean_placeholders = [p.strip() for p in placeholders if p.strip()]
+
+    # Select random items
+    selected = random.sample(clean_placeholders, min(count, len(clean_placeholders)))
+
+    # Join with newlines if multiple items
+    return "\n".join(selected)
 
 
 def StepProgress(step_num: int, steps_dict: dict):
     """Generate step indicator for each step in the signup process"""
     universal_cls = "w-full pt-10 pb-4"
-    match step_num:
-        case 1:
-            return mui.Steps(cls=universal_cls)(
-                mui.LiStep(steps_dict[1], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[2], cls=mui.StepT.neutral),
-                mui.LiStep(steps_dict[3], cls=mui.StepT.neutral),
-            )
-        case 2:
-            return mui.Steps(cls=universal_cls)(
-                mui.LiStep(steps_dict[1], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[2], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[3], cls=mui.StepT.neutral),
-            )
-        case 3:
-            return mui.Steps(cls=universal_cls)(
-                mui.LiStep(steps_dict[1], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[2], cls=mui.StepT.primary),
-                mui.LiStep(steps_dict[3], cls=mui.StepT.primary),
-            )
+
+    # Create base steps element
+    steps = Ul(cls=f"steps {universal_cls}")
+
+    # Helper function to determine step class
+    def get_step_class(step_index):
+        if step_index <= step_num:
+            return "step-primary"
+        return ""
+
+    # Add all steps
+    for i in range(1, 4):
+        steps(Li(steps_dict[i], cls=f"step {get_step_class(i)}"))
+
+    return steps
 
 
 def StepContent(step_num: int, steps_dict: dict, session=None):
     """Generate content for each step"""
+    fieldset_cls = "fieldset bg-base-100 border border-base-300 p-4 rounded-box"
+    textarea_cls = "textarea textarea-bordered w-full h-32 mb-4"
+    tooltip_cls = "tooltip tooltip-info"
     match step_num:
         case 1:
             # Get email from session if available
             email = session.get("auth", "") if session else ""
 
-            return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
+            return Fieldset(
+                cls=fieldset_cls,
+            )(
                 Legend(steps_dict[1], cls="fieldset-legend"),
                 # Add email as a hidden field instead of visible input
                 Hidden(value=email, name="email") if email else None,
-                P(cls="text-sm mb-4")(
-                    f"Signed in as {email}" if email else "Email not found in session"
+                Div(
+                    cls="text-sm mb-4",
+                    id="signed-in-as",
+                )(
+                    P("Signed in as"),
+                    P(cls="text-secondary")(
+                        f"{email}" if email else "Email not found in session",
+                    ),
                 ),
-                Label("Name", cls="fieldset-label"),
-                Input(cls="input input-bordered w-full")(
+                Div(
+                    cls=tooltip_cls,
+                    data_tip="How do you want to be called?",
+                )(Label("Name", cls="fieldset-label")),
+                Input(cls="input input-bordered w-full mb-4")(
                     placeholder="John Doe",
                     id="name",
                     name="name",
@@ -67,9 +102,12 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                 Div(cls="text-error text-sm hidden", id="name-error")(
                     "Name is required"
                 ),
-                Label("Bio", cls="fieldset-label mt-1"),
-                Textarea(cls="textarea textarea-bordered w-full h-24")(
-                    placeholder="Tell us a little bit about yourself",
+                Div(
+                    cls=tooltip_cls,
+                    data_tip="Tell us a little about yourself, be as brief or as detailed as you want.",
+                )(Label("Bio", cls="fieldset-label")),
+                Textarea(cls=textarea_cls)(
+                    placeholder=get_random_placeholders(placeholder_bio),
                     id="bio",
                     name="bio",
                     required=True,
@@ -77,105 +115,62 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                 Div(cls="text-error text-sm hidden", id="bio-error")("Bio is required"),
             )
         case 2:
-            return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
+            error_cls = "text-error text-sm hidden"
+            return Fieldset(
+                cls=fieldset_cls,
+            )(
                 Legend(steps_dict[2], cls="fieldset-legend"),
-                Label("What do you want to achieve?", cls="fieldset-label"),
-                Textarea(cls="textarea textarea-bordered w-full h-32")(
-                    placeholder="Be honest, realistic, and precise.",
+                Div(
+                    cls=tooltip_cls,
+                    data_tip="What do you want to achieve? Be honest, realistic, and precise.",
+                )(Label("Details", cls="fieldset-label")),
+                Textarea(cls=textarea_cls)(
+                    placeholder=get_random_placeholders(placeholder_habits),
                     id="habit_details",
                     name="habit_details",
                     required=True,
                 ),
-                Div(cls="text-error text-sm hidden", id="habit_details-error")(
-                    "This field is required"
-                ),
-                Label("Time Frame", cls="fieldset-label"),
-                Select(
-                    Option("--", disabled=True, selected=True, value=""),
-                    Option("1 week", value="1 week"),
-                    Option("1 month", value="1 month"),
-                    Option("3 months", value="3 months"),
-                    Option("6 months", value="6 months"),
-                    Option("1 year", value="1 year"),
-                    Option("3 years", value="3 years"),
-                    Option("5 years", value="5 years"),
-                    cls="select select-bordered w-full",
-                    id="timeframe",
-                    name="timeframe",
+                Div(cls=error_cls, id="habit_details-error")("This field is required"),
+                Div(
+                    cls=tooltip_cls,
+                    data_tip="How are you actually going to achieve this?",
+                )(Label("Action Plan", cls="fieldset-label")),
+                Textarea(cls=textarea_cls)(
+                    placeholder=get_random_placeholders(placeholder_action_plan, 1),
+                    id="action_plan",
+                    name="action_plan",
                     required=True,
                 ),
-                Div(cls="text-error text-sm hidden", id="timeframe-error")(
-                    "Please select a time frame"
+                Div(cls=error_cls, id="action_plan-error")("Action Plan is required"),
+                Div(
+                    cls=tooltip_cls,
+                    data_tip="What might stop you from forming this habit?",
+                )(Label("Potential Obstacles", cls="fieldset-label")),
+                Textarea(cls=textarea_cls)(
+                    placeholder=get_random_placeholders(placeholder_obstacles, 3),
+                    id="obstacles",
+                    name="obstacles",
+                    required=True,
                 ),
-                P(cls="text-sm opacity-70 mt-1")(
-                    "How long are you committing to establishing this habit?",
+                Div(cls=error_cls, id="obstacles-error")(
+                    "Nothing's going to stop you?! Great! Put that."
                 ),
             )
         case 3:
-            return Fieldset(cls="fieldset bg-card p-4 rounded-box")(
+            return Fieldset(
+                cls=fieldset_cls,
+            )(
                 Legend(steps_dict[3], cls="fieldset-legend"),
-                Label("Delivery Time", cls="fieldset-label mt-4"),
+                Div(
+                    cls=tooltip_cls,
+                    data_tip="When would you like to receive your daily motivation?",
+                )(Label("Delivery Time", cls="fieldset-label mt-4")),
                 Input(
                     type="time",
                     id="delivery_time",
                     name="delivery_time",
                     value="09:00",
                     cls="input input-bordered w-full",
-                ),
-                P(cls="text-sm opacity-70 mt-1")(
-                    "When would you like to receive your daily motivation?",
-                ),
-                Label("Email Style", cls="fieldset-label mt-4"),
-                # Formality Slider
-                Label("Formality", cls="label mt-4"),
-                Div(cls="w-full")(
-                    Input(
-                        type="range",
-                        min="0",
-                        max="100",
-                        value="50",
-                        cls="range range-primary",
-                        id="formality",
-                        name="formality",
-                    ),
-                    Div(cls="flex justify-between px-2 text-xs")(
-                        Span("Casual & Friendly"), Span("Formal & Professional")
-                    ),
-                ),
-                # Assertiveness Slider
-                Label("Assertiveness", cls="label mt-4"),
-                Div(cls="w-full")(
-                    Input(
-                        type="range",
-                        min="0",
-                        max="100",
-                        value="50",
-                        cls="range range-secondary",
-                        id="assertiveness",
-                        name="assertiveness",
-                    ),
-                    Div(cls="flex justify-between px-2 text-xs")(
-                        Span("Gentle & Supportive"), Span("Direct & Challenging")
-                    ),
-                ),
-                # Intensity Slider
-                Label("Emotional Intensity", cls="label mt-4"),
-                Div(cls="w-full")(
-                    Input(
-                        type="range",
-                        min="0",
-                        max="100",
-                        value="50",
-                        cls="range range-accent",
-                        id="intensity",
-                        name="intensity",
-                    ),
-                    Div(cls="flex justify-between px-2 text-xs")(
-                        Span("Calm & Measured"), Span("Passionate & Energetic")
-                    ),
-                ),
-                P(cls="text-sm opacity-70 mt-4")(
-                    "Adjust these sliders to customize the tone and style of your motivational emails.",
                 ),
             )
 
@@ -238,17 +233,22 @@ def SignUpForm(step_num: int, form_data=None, session=None):
 
 def SignUpPage(step_num=1, form_data=None, session=None):
     """Complete signup page with progress indicator and form"""
-    # Create container with fixed progress at top and scrollable form below
-    return Div(cls="container mx-auto max-w-md")(
-        # Fixed progress indicator at the top
-        Div(cls="sticky top-0 bg-background z-10 shadow-sm", id="progress-indicator")(
-            StepProgress(step_num, steps_dict),
-        ),
-        # Form container with padding
-        Div(cls="p-4", id="signup-container")(
-            # Container for form content that will be updated by HTMX
-            Div(id="form-content")(
-                SignUpForm(step_num, form_data, session),
+    # Create container using hero component for full-height background
+    return Title("Sign Up"), Div(cls="hero min-h-screen bg-base-200")(
+        Div(cls="hero-content flex-col w-full max-w-md p-0")(
+            # Fixed progress indicator at the top
+            Div(
+                cls="w-full sticky top-0 bg-base-200 z-10",
+                id="progress-indicator",
+            )(
+                StepProgress(step_num, steps_dict),
+            ),
+            # Form container
+            Div(cls="w-full", id="signup-container")(
+                # Container for form content that will be updated by HTMX
+                Div(id="form-content")(
+                    SignUpForm(step_num, form_data, session),
+                ),
             ),
         ),
     )
@@ -264,7 +264,9 @@ def get(session=None):
     if not session or "auth" not in session:
         return RedirectResponse("/login")
 
-    return Title("Sign Up"), SignUpPage(step_num=1, form_data=form_data, session=session)
+    return Title("Sign Up"), SignUpPage(
+        step_num=1, form_data=form_data, session=session
+    )
 
 
 # Process form submission for each step
@@ -284,11 +286,9 @@ async def process_step(request, step: int, session):
             "name",
             "bio",
             "habit_details",
-            "timeframe",
+            "action_plan",
+            "obstacles",
             "delivery_time",
-            "formality",
-            "assertiveness",
-            "intensity",
         ]
     }
 
@@ -404,7 +404,9 @@ def render_step(step: int, session):
 def success():
     """Display success message after completing signup"""
     return Div(cls="container mx-auto max-w-md p-4")(
-        Div(cls="text-center p-8 bg-card rounded-box shadow-lg")(
+        Div(
+            cls="text-center p-8 bg-base-100 border border-base-300 rounded-box shadow-lg"
+        )(
             H2("Thank You for Signing Up!", cls="text-2xl font-bold"),
             P(cls="my-4")("Your account has been created successfully."),
             P(cls="mb-4")(

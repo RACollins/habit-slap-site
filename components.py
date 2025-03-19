@@ -1,150 +1,111 @@
 from fasthtml.common import *
-from monsterui.all import *
-import re
-import os
-from config import selected_theme
-
-
-def TopBar():
-    return NavBar(
-        A("Home", href="/"),
-        # A("Theme", href="/theme"),
-        A("Login", href="/login"),
-        brand="Habit Slap",
-    )
 
 
 def DaisyTopBar():
-    return Div(cls="navbar bg-background")(
+    return Div(cls="navbar bg-base-200")(
         Div(cls="flex-1")(
             A("Habit Slap", cls="btn btn-ghost text-xl", href="/"),
         ),
         Div(cls="flex-none")(
             Ul(cls="menu menu-horizontal px-1")(
                 Li(A("Login", href="/login")),
-                Li(
-                    Details(
-                        Summary("Parent"),
-                        Ul(cls="bg-background rounded-t-none p-2")(
-                            Li(A("Link 1")),
-                            Li(A("Link 2")),
-                        ),
-                    )
-                ),
             ),
         ),
     )
 
 
-def theme_picker():
-    return ThemePicker(
-        custom_themes=[
-            ("Tokyo", "#869de6"),
-        ],
-    )
-
-
 def HowItWorksCard(step):
-    return Div(cls="card bg-card shadow-xl flex-1")(
+    return Div(cls="card card-border bg-base-100 border-base-300 shadow-xl flex-1")(
         Div(cls="card-body items-center text-center")(
             H2(step["top"], cls="card-title"),
             P(step["body"], cls="text-xl my-4"),
-            P(step["bottom"], cls="text-muted-foreground"),
+            P(step["bottom"], cls="text-base-content"),
         )
     )
 
 
 def TestimonialCard(text, author, username):
-    return Div(cls="card bg-card shadow-xl")(
+    return Div(cls="card card-border bg-base-100 border-base-300 shadow-xl")(
         Div(cls="card-body")(
             # Large quotation mark
             Div('"', cls="text-4xl text-primary mb-4"),
             # Testimonial text
-            P(text, cls="text-lg text-foreground mb-4"),
+            P(text, cls="text-lg text-base-content mb-4"),
             # Author info
             Div(cls="mt-auto")(
                 H3(author, cls="font-bold"),
-                P(f"@{username}", cls="text-sm text-muted-foreground"),
+                P(f"@{username}", cls="text-sm text-base-content"),
             ),
         )
     )
 
 
-def extract_theme_colors(css_content):
-    """Extract specific colors from CSS content."""
-    color_vars = {
-        "muted": None,
-        "muted-foreground": None,
-        "primary": None,
-        "primary-foreground": None,
-    }
-
-    # Find all color definitions
-    for line in css_content.split("\n"):
-        for color_name in color_vars.keys():
-            pattern = f"--{color_name}: (.*?);"
-            match = re.search(pattern, line)
-            if match:
-                # Convert "240 13.73% 10%" to "hsl(240,13.73%,10%)"
-                values = match.group(1).strip()
-                color_vars[color_name] = f"[hsl({values.replace(' ', ',')})]"
-
-    return color_vars
-
-
-def load_theme_colors():
-    """Load colors from all theme files."""
-    theme_colors = {}
-    css_dir = "css"
-
-    for filename in os.listdir(css_dir):
-        if filename.endswith("_theme.css"):
-            theme_name = filename.replace("_theme.css", "")
-            with open(os.path.join(css_dir, filename), "r") as f:
-                css_content = f.read()
-                theme_colors[theme_name] = extract_theme_colors(css_content)
-
-    return theme_colors
-
-
-### Load the colors once when the module is imported
-hc_colours = load_theme_colors()
-
-
 def FAQComp(question, answer):
-    theme_colors = hc_colours[selected_theme]
-    
-    return Div(cls=f"collapse collapse-arrow bg-muted text-muted-foreground")(
+    return Div(
+        cls=f"collapse collapse-arrow border border-base-300 bg-base-100 text-base-content"
+    )(
         Input(type="checkbox", cls="peer"),
         Div(
             question,
-            cls=f"collapse-title peer-checked:bg-{theme_colors['primary']} peer-checked:text-{theme_colors['primary-foreground']}",
+            cls=f"collapse-title peer-checked:bg-primary peer-checked:text-primary-content",
         ),
         Div(
             P(answer),
-            cls=f"collapse-content peer-checked:bg-{theme_colors['primary']} peer-checked:text-{theme_colors['primary-foreground']}",
+            cls=f"collapse-content peer-checked:bg-primary peer-checked:text-primary-content",
         ),
     )
 
-### Using MonsterUI Card, not DaisyUI Card
-def PricingCard(plan, price, features):
-    return Card(
-        Div(cls="p-12")(  # Added padding container
-            DivVStacked(cls="space-y-1")(  # Center and vertically stack the plan name and price
-                H2(plan),
-                H3(price, cls="text-primary"),
-                P("per month"),
-            ),
-            # DivHStacked makes green check and feature Li show up on same row instead of newline
-            Ul(cls="space-y-4 my-6")(  # Added vertical margin
-                *[
-                    DivHStacked(UkIcon("check", cls="text-green-500 mr-2"), Li(feature))
-                    for feature in features
-                ],
-            ),
-            Button(
-                "Subscribe Now",
-                cls=("btn btn-primary text-primary-foreground w-full"),
-            ),
+
+def PricingCardBody(plan, price, features, button_text):
+    return Div(cls="card-body items-center text-center")(
+        H2(plan, cls="card-title text-2xl mb-2"),
+        H3(price, cls="text-secondary text-4xl font-bold mb-4"),
+        Ul(cls="space-y-3 mb-6")(
+            *[
+                Li(cls="flex items-center gap-2")(
+                    Div(
+                        "✓",
+                        data_tip="This is a tooltip",
+                        cls="tooltip tooltip-info",
+                    ),
+                    Span(feature),
+                )
+                for feature in features
+            ]
         ),
+        Div(cls="mt-auto w-full")(Button(button_text, cls="btn btn-primary w-full")),
+    )
+
+
+def PricingCard(plan, price, features, button_text):
+    return Div(
+        cls="card card-border bg-base-100 border-base-300 shadow-xl h-102 w-full"
+    )(PricingCardBody(plan, price, features, button_text))
+
+
+def PricingTabs(plans):
+    container_div_style = "tab-content border-base-300 bg-base-100 p-6 w-full"
+    tab_content_list = []
+    for plan, plan_dict in plans.items():
+        tab_content_list.append(
+            Input(
+                type="radio",
+                name="pricing_tabs",
+                aria_label=plan,
+                cls="tab",
+                checked="checked" if plan == "1 month" else None,
+            )
+        )
+        tab_content_list.append(
+            Div(cls=container_div_style)(
+                PricingCardBody(
+                    plan=plan,
+                    price=plan_dict["price"],
+                    features=plan_dict["features"],
+                    button_text=plan_dict["button_text"],
+                )
+            )
+        )
+    return Div(cls="tabs tabs-lift")(
+        *tab_content_list,
     )

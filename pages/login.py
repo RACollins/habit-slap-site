@@ -1,6 +1,5 @@
 from fasthtml.common import *
 import fasthtml
-from monsterui.all import *
 from components import DaisyTopBar
 import random
 import os
@@ -13,20 +12,20 @@ from datetime import datetime, timedelta, timezone
 load_dotenv()
 db = DynamoHandler()
 site_url = os.getenv("SITE_URL")
-
+root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ar = fasthtml.APIRouter()
 
 
 def MagicLinkForm(btn_text: str, target: str):
 
-    with open("placeholder_emails.txt", "r") as file:
+    with open(os.path.join(root_dir, "placeholders/emails.txt"), "r") as file:
         placeholder_emails = file.readlines()
     placeholder_email = random.choice(placeholder_emails).strip()
 
     return Div(cls="hero bg-background min-h-screen")(
         Div(cls="hero-content text-center")(
             Div(cls="max-w-md")(
-                H1("No Passwords. No Excuses.", cls="text-4xl font-bold"),
+                H1("No Passwords. No Excuses.", cls="text-3xl font-bold"),
                 P(cls="flex items-center justify-center gap-2 py-3")(
                     "Just enter your @ and click on the link."
                 ),
@@ -37,7 +36,7 @@ def MagicLinkForm(btn_text: str, target: str):
                             name="email",
                             required=True,
                             placeholder=placeholder_email,
-                            cls="input input-bordered w-full join-item validator placeholder-accent",
+                            cls="input input-bordered bg-base-100 w-full join-item validator placeholder-slate-500",
                         ),
                         Div("Enter valid email address", cls="validator-hint hidden"),
                     ),

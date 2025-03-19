@@ -173,3 +173,8 @@ cython_debug/
 # Extras
 .sesskey
 .cursor
+
+# TailwindCSS
+tailwindcss
+tailwindcss-*
+tailwindcss.exe
