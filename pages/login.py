@@ -11,7 +11,8 @@ from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 db = DynamoHandler()
-site_url = os.getenv("SITE_URL")
+is_dev = os.getenv("IS_DEV")
+site_url = "http://0.0.0.0:5001" if is_dev else "https://habit-slap.vercel.app"
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ar = fasthtml.APIRouter()
 
@@ -37,6 +38,9 @@ def MagicLinkForm(btn_text: str, target: str):
                             required=True,
                             placeholder=placeholder_email,
                             cls="input input-bordered bg-base-100 w-full join-item validator placeholder-slate-500",
+                            pattern=r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}",
+                            data_validation="Please enter a valid email address",
+                            data_validation_type="email",
                         ),
                         Div("Enter valid email address", cls="validator-hint hidden"),
                     ),
@@ -101,8 +105,10 @@ def post(email: str):
 
     try:
         # Get or create user
+        is_new_user = False
         user = db.get_user(email)
         if not user:
+            is_new_user = True
             user = {
                 "email": email,
                 "is_active": False,
@@ -125,9 +131,25 @@ def post(email: str):
             },
         )
 
-        # Send email
-        magic_link = f"{site_url}/verify_magic_link/{magic_link_token}"
-        send_magic_link_email(email, magic_link)
+        try:
+            # Send email
+            magic_link = f"{site_url}/verify_magic_link/{magic_link_token}"
+            send_magic_link_email(email, magic_link)
+        except Exception as email_error:
+            # Clean up based on user status
+            if is_new_user:
+                # Delete the newly created user
+                db.delete_user(email)
+            else:
+                # Reset magic link info for existing user
+                db.update_user(
+                    email,
+                    {
+                        "magic_link_token": None,
+                        "magic_link_expiry": None,
+                    },
+                )
+            raise email_error
 
         # Return success response
         return (

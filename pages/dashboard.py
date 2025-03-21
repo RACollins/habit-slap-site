@@ -13,6 +13,27 @@ ar = fasthtml.APIRouter()
 db = DynamoHandler()
 
 
+def TextareaWithLimit(
+    id: str, name: str, value: str = "", cls: str = "", required: bool = True
+):
+    """Create a textarea with character limit counter and validation"""
+    return Div(cls="relative")(
+        Textarea(
+            value,
+            cls=f"{cls} peer",
+            maxlength="500",
+            id=id,
+            name=name,
+            required=required,
+            hx_on_input="this.nextElementSibling.textContent = this.value.length + '/500'; this.classList.toggle('textarea-error', this.value.length >= 500)",
+        ),
+        Div(
+            f"{len(value)}/500",
+            cls="absolute bottom-0 right-0 text-sm text-base-content/70",
+        ),
+    )
+
+
 def SidebarContent(email):
     return Div(cls="h-full")(
         Div(
@@ -130,7 +151,7 @@ def PersonalContent(user):
     bio = user.get("bio", "")
 
     # Common styles
-    textarea_cls = "textarea textarea-bordered w-full h-32 mb-4"
+    textarea_cls = "textarea textarea-bordered w-full h-32 mb-8"
 
     return Div(cls="hero-content")(
         Div(cls="card w-full bg-base-200")(
@@ -153,10 +174,10 @@ def PersonalContent(user):
                             cls="input input-bordered w-full mb-4",
                         ),
                         Label("Bio", cls="fieldset-label"),
-                        Textarea(
-                            bio,
+                        TextareaWithLimit(
                             id="bio",
                             name="bio",
+                            value=bio,
                             cls=textarea_cls,
                         ),
                         Div(cls="mt-6 text-right")(
@@ -181,7 +202,7 @@ def HabitContent(user):
     obstacles = user.get("obstacles", "")
 
     # Common styles
-    textarea_cls = "textarea textarea-bordered w-full h-32 mb-4"
+    textarea_cls = "textarea textarea-bordered w-full h-32 mb-8"
 
     return Div(cls="hero-content")(
         Div(cls="card w-full bg-base-200")(
@@ -196,24 +217,24 @@ def HabitContent(user):
                     )(
                         Legend("Habit Information", cls="fieldset-legend"),
                         Label("Details", cls="fieldset-label"),
-                        Textarea(
-                            habit_details,
+                        TextareaWithLimit(
                             id="habit_details",
                             name="habit_details",
+                            value=habit_details,
                             cls=textarea_cls,
                         ),
                         Label("Action Plan", cls="fieldset-label"),
-                        Textarea(
-                            action_plan,
+                        TextareaWithLimit(
                             id="action_plan",
                             name="action_plan",
+                            value=action_plan,
                             cls=textarea_cls,
                         ),
                         Label("Potential Obstacles", cls="fieldset-label"),
-                        Textarea(
-                            obstacles,
+                        TextareaWithLimit(
                             id="obstacles",
                             name="obstacles",
+                            value=obstacles,
                             cls=textarea_cls,
                         ),
                         # Save Button
@@ -287,11 +308,12 @@ def PreferencesContent(user, session):
 
 
 def MainContent(user, session):
-    return Div(cls="flex flex-col drawer-content h-screen")(
-        Div(cls="w-full navbar-center bg-background")(
+    return Div(cls="drawer-content bg-base-200 min-h-screen")(
+        # Navbar
+        Div(cls="w-full navbar bg-base-200")(
             Div(cls="flex-none")(
                 Label(
-                    cls="btn btn-square btn-ghost drawer-button transition-transform",
+                    cls="btn btn-square btn-ghost drawer-button lg:hidden",
                     fr="dashboard-drawer",
                     id="drawer-toggle-btn",
                     aria_label="Toggle sidebar",
@@ -299,18 +321,19 @@ def MainContent(user, session):
             ),
             Div(cls="flex-1 p-4 mx-2 text-4xl text-center font-bold")(H1("Dashboard")),
         ),
-        Div(cls="p-4 flex-grow")(
+        # Content sections container
+        Div(cls="p-4 bg-base-200")(
             # Content sections - only one will be visible at a time
             Div(cls="content-section", id="personal-content")(
-                H1(cls="text-2xl font-bold")("Personal Settings"),
+                H1(cls="text-2xl font-bold")("Personal"),
                 PersonalContent(user),
             ),
             Div(cls="content-section hidden", id="habit-content")(
-                H1(cls="text-2xl font-bold")("Habit Tracking"),
+                H1(cls="text-2xl font-bold")("Habit"),
                 HabitContent(user),
             ),
             Div(cls="content-section hidden", id="preferences-content")(
-                H1(cls="text-2xl font-bold")("User Preferences"),
+                H1(cls="text-2xl font-bold")("Preferences"),
                 PreferencesContent(user, session),
             ),
         ),
@@ -320,12 +343,15 @@ def MainContent(user, session):
 def DashboardPage(user, session):
     # Get email from session if available
     email = session.get("auth", "") if session else ""
-    return Div(cls="drawer lg:drawer-open")(
+    return Div(cls="drawer lg:drawer-open min-h-screen bg-base-200")(
         Input(id="dashboard-drawer", type="checkbox", cls="drawer-toggle"),
         MainContent(user, session),
+        # Sidebar
         Div(cls="drawer-side")(
             Label(
-                cls="drawer-overlay", fr="dashboard-drawer", aria_label="close sidebar"
+                cls="drawer-overlay",
+                fr="dashboard-drawer",
+                aria_label="close sidebar",
             ),
             SidebarContent(email),
         ),
