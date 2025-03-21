@@ -11,8 +11,14 @@ from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 db = DynamoHandler()
-is_dev = os.getenv("IS_DEV")
+
+# Convert string environment variables to proper boolean values
+is_dev = os.getenv("IS_DEV", "false").lower() == "true"
+is_prod = os.getenv("IS_PROD", "false").lower() == "true"
+
+# Set site URL based on environment
 site_url = "http://0.0.0.0:5001" if is_dev else "https://www.habitslap.com"
+
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ar = fasthtml.APIRouter()
 
