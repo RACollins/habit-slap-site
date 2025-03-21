@@ -28,8 +28,6 @@
     --text-5xl: 3rem;
     --text-5xl--line-height: 1;
     --font-weight-bold: 700;
-    --default-transition-duration: 150ms;
-    --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-font-feature-settings: var(--font-sans--font-feature-settings);
     --default-font-variation-settings: var(--font-sans--font-variation-settings);
@@ -1601,6 +1599,9 @@
       }
     }
   }
+  .absolute {
+    position: absolute;
+  }
   .relative {
     position: relative;
   }
@@ -1609,6 +1610,15 @@
   }
   .top-0 {
     top: calc(var(--spacing) * 0);
+  }
+  .right-0 {
+    right: calc(var(--spacing) * 0);
+  }
+  .bottom-0 {
+    bottom: calc(var(--spacing) * 0);
+  }
+  .bottom-1 {
+    bottom: calc(var(--spacing) * 1);
   }
   .textarea {
     border: var(--border) solid #0000;
@@ -1946,11 +1956,6 @@
       flex-grow: 1;
     }
   }
-  .navbar-center {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-  }
   .fieldset-label {
     display: flex;
     align-items: center;
@@ -2052,9 +2057,6 @@
   .h-full {
     height: 100%;
   }
-  .h-screen {
-    height: 100vh;
-  }
   .min-h-full {
     min-height: 100%;
   }
@@ -2078,9 +2080,6 @@
   }
   .flex-none {
     flex: none;
-  }
-  .flex-grow {
-    flex-grow: 1;
   }
   .transform {
     transform: var(--tw-rotate-x) var(--tw-rotate-y) var(--tw-rotate-z) var(--tw-skew-x) var(--tw-skew-y);
@@ -2257,6 +2256,9 @@
   .text-base-content {
     color: var(--color-base-content);
   }
+  .text-base-content\/70 {
+    color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+  }
   .text-error {
     color: var(--color-error);
   }
@@ -2303,11 +2305,6 @@
   .filter {
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
-  .transition-transform {
-    transition-property: transform, translate, scale, rotate;
-    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
-    transition-duration: var(--tw-duration, var(--default-transition-duration));
-  }
   .btn-outline {
     &:not(.btn-active, :hover, :active:focus, :focus-visible, :disabled, [disabled], .btn-disabled) {
       --btn-shadow: "";
@@ -2330,6 +2327,11 @@
     --btn-fg: var(--color-success-content);
   }
   .input-error {
+    &, &:focus, &:focus-within {
+      --input-color: var(--color-error);
+    }
+  }
+  .textarea-error {
     &, &:focus, &:focus-within {
       --input-color: var(--color-error);
     }
@@ -2390,6 +2392,11 @@
           visibility: visible;
         }
       }
+    }
+  }
+  .lg\:hidden {
+    @media (width >= 64rem) {
+      display: none;
     }
   }
   .lg\:grid-cols-3 {
