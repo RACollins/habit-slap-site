@@ -11,7 +11,8 @@ from datetime import datetime, timedelta, timezone
 
 load_dotenv()
 db = DynamoHandler()
-site_url = os.getenv("SITE_URL")
+is_dev = os.getenv("IS_DEV")
+site_url = "http://0.0.0.0:5001" if is_dev else "https://habit-slap.vercel.app"
 root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ar = fasthtml.APIRouter()
 

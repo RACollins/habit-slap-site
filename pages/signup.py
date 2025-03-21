@@ -44,6 +44,27 @@ def get_random_placeholders(placeholders: list[str], count: int = 1) -> str:
     return "\n".join(selected)
 
 
+def TextareaWithLimit(
+    id: str, name: str, placeholder: str, cls: str = "", required: bool = True
+):
+    """Create a textarea with character limit counter and validation"""
+    return Div(cls="relative")(
+        Textarea(
+            cls=f"{cls} peer",
+            maxlength="500",
+            id=id,
+            name=name,
+            placeholder=placeholder,
+            required=required,
+            hx_on_input="this.nextElementSibling.textContent = this.value.length + '/500'; this.classList.toggle('textarea-error', this.value.length >= 500)",
+        ),
+        Div(
+            "0/500",
+            cls="absolute bottom-1 right-0 text-sm text-base-content/70",
+        ),
+    )
+
+
 def StepProgress(step_num: int, steps_dict: dict):
     """Generate step indicator for each step in the signup process"""
     universal_cls = "w-full pt-10 pb-4"
@@ -67,7 +88,7 @@ def StepProgress(step_num: int, steps_dict: dict):
 def StepContent(step_num: int, steps_dict: dict, session=None):
     """Generate content for each step"""
     fieldset_cls = "fieldset bg-base-100 border border-base-300 p-4 rounded-box"
-    textarea_cls = "textarea textarea-bordered w-full h-32 mb-4"
+    textarea_cls = "textarea textarea-bordered w-full h-32 mb-8"  # Increased margin bottom to accommodate counter
     tooltip_cls = "tooltip tooltip-info"
     match step_num:
         case 1:
@@ -106,11 +127,11 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     cls=tooltip_cls,
                     data_tip="Tell us a little about yourself, be as brief or as detailed as you want.",
                 )(Label("Bio", cls="fieldset-label")),
-                Textarea(cls=textarea_cls)(
-                    placeholder=get_random_placeholders(placeholder_bio),
+                TextareaWithLimit(
                     id="bio",
                     name="bio",
-                    required=True,
+                    placeholder=get_random_placeholders(placeholder_bio),
+                    cls=textarea_cls,
                 ),
                 Div(cls="text-error text-sm hidden", id="bio-error")("Bio is required"),
             )
@@ -124,33 +145,33 @@ def StepContent(step_num: int, steps_dict: dict, session=None):
                     cls=tooltip_cls,
                     data_tip="What do you want to achieve? Be honest, realistic, and precise.",
                 )(Label("Details", cls="fieldset-label")),
-                Textarea(cls=textarea_cls)(
-                    placeholder=get_random_placeholders(placeholder_habits),
+                TextareaWithLimit(
                     id="habit_details",
                     name="habit_details",
-                    required=True,
+                    placeholder=get_random_placeholders(placeholder_habits),
+                    cls=textarea_cls,
                 ),
                 Div(cls=error_cls, id="habit_details-error")("This field is required"),
                 Div(
                     cls=tooltip_cls,
                     data_tip="How are you actually going to achieve this?",
                 )(Label("Action Plan", cls="fieldset-label")),
-                Textarea(cls=textarea_cls)(
-                    placeholder=get_random_placeholders(placeholder_action_plan, 1),
+                TextareaWithLimit(
                     id="action_plan",
                     name="action_plan",
-                    required=True,
+                    placeholder=get_random_placeholders(placeholder_action_plan, 1),
+                    cls=textarea_cls,
                 ),
                 Div(cls=error_cls, id="action_plan-error")("Action Plan is required"),
                 Div(
                     cls=tooltip_cls,
                     data_tip="What might stop you from forming this habit?",
                 )(Label("Potential Obstacles", cls="fieldset-label")),
-                Textarea(cls=textarea_cls)(
-                    placeholder=get_random_placeholders(placeholder_obstacles, 3),
+                TextareaWithLimit(
                     id="obstacles",
                     name="obstacles",
-                    required=True,
+                    placeholder=get_random_placeholders(placeholder_obstacles, 3),
+                    cls=textarea_cls,
                 ),
                 Div(cls=error_cls, id="obstacles-error")(
                     "Nothing's going to stop you?! Great! Put that."
