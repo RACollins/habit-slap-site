@@ -169,7 +169,7 @@ def FAQ():
 def Pricing():
     plans = {
         "1 month": {
-            "price": "$10",
+            "price": "$5",
             "features": [
                 "1 month of full access",
                 "1 habit goal",
@@ -178,7 +178,7 @@ def Pricing():
             "button_text": "Buy Now",
         },
         "3 months": {
-            "price": "$30",
+            "price": "$10",
             "features": [
                 "3 months of full access",
                 "1 habit goal",
@@ -187,7 +187,7 @@ def Pricing():
             "button_text": "Buy Now",
         },
         "6 months": {
-            "price": "$60",
+            "price": "$15",
             "features": [
                 "6 months of full access",
                 "1 habit goal",
@@ -196,7 +196,7 @@ def Pricing():
             "button_text": "Buy Now",
         },
         "1 year": {
-            "price": "$120",
+            "price": "$20",
             "features": [
                 "1 year of full access",
                 "1 habit goal",
